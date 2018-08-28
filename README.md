@@ -17,5 +17,5 @@ RabbitMQ作为一个消息代理，主要和消息打交道，负责接收并转
 
 #### 简单架构示意图  
 RabbitMQ系统最核心的组件是Exchange和Queue，下图是系统简单的示意图。Exchange和Queue是在rabbitmq server（又叫做broker）端，producer和consumer在应用端。
-![简单的架构示意图](https://github-1251498502.cos.ap-chongqing.myqcloud.com/RabbitMQ/2799767-82c5402158929477_2.png)  
+![简单的架构示意图](https://github-1251498502.cos.ap-chongqing.myqcloud.com/RabbitMQ/2799767-82c5402158929477_2.png?radom=12122)  
 消费者(consumer)订阅某个队列，生产者(producer)创建消息并通过exchange将消息发布到队列(queue)，最后队列在将消息发送给监听的消费者consumer。  
