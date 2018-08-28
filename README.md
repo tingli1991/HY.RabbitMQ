@@ -50,7 +50,7 @@ RabbitMQ中，producer不是通过信道直接将消息发送给queue，而是�
 
 * **Headers：**  headers类型的Exchange不依赖于routing key与binding key的匹配规则来路由消息，而是根据发送的消息内容中的headers的键值对属性进行匹配。    
 在绑定Queue与Exchange时指定**一组键值对**；当消息发送到Exchange时，RabbitMQ会取到该消息的headers（也是**一组键值对**的形式），对比其中的键值对是否完全匹配Queue与Exchange绑定时指定的键值对；如果完全匹配则消息会路由到该Queue，否则不会路由到该Queue。  
-由于官方也没有对这种类型做任何解释，那么我们就举个实例并结合代码来解读一下这种类型吧！ 
+由于官方也没有对这种类型做任何解释，那么我们就举个实例并结合代码来解读一下这种类型吧！   
 **示例：**  
 在生产消息的时候，我们往消息的headers中附加了user:admin,pwd:123456  
 ``` C# 
@@ -121,7 +121,7 @@ using (var channel = RabbitMqHelper.GetConnection().CreateModel())
     Console.ReadKey();
 }
 ```  
-这里实验一个all的类型：  
+**这里实验一个all的类型：**   
 首先把consumer运行起来，第一次我们的生产者的headers中只一个项匹配,可以看到消息是发布出去了，但是consumer并没有从queue中收到，也就是这边是不匹配的 exchange并没有把消息推到queue。  
 ![all类型的匹配](https://github-1251498502.cos.ap-chongqing.myqcloud.com/RabbitMQ/2799767-82c5402158929477_7.png)  
 在webui中也是可以看到queue中是没有任何消息的  
