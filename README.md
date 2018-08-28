@@ -36,16 +36,17 @@ RabbitMQ中，producer不是通过信道直接将消息发送给queue，而是�
 ![直接交换器示意图](https://github-1251498502.cos.ap-chongqing.myqcloud.com/RabbitMQ/2799767-82c5402158929477_5.png)  
 当生产者（P）发送消息时Rotuing key=booking时，这时候将消息传送给Exchange，Exchange获取到生产者发送过来消息后，会根据自身的规则进行与匹配相应的Queue，这时发现Queue1和Queue2都符合，就会将消息传送给这两个队列，如果我们以Rotuing key=create和Rotuing key=confirm发送消息时，这时消息只会被推送到Queue2队列中，其他Routing Key的消息将会被丢弃。  
 
-* **Fanout：** 广播是式交换器，fanout类型的Exchange路由规则非常简单，它会把所有发送到该Exchange的消息路由到所有与它绑定的Queue中；  
-![直接交换器示意图](https://github-1251498502.cos.ap-chongqing.myqcloud.com/RabbitMQ/2799767-82c5402158929477_4.png)  
+* **Fanout：** 广播式式交换器，fanout类型的Exchange路由规则非常简单，它会把所有发送到该Exchange的消息路由到所有与它绑定的Queue中；  
+![广播式交换器示意图](https://github-1251498502.cos.ap-chongqing.myqcloud.com/RabbitMQ/2799767-82c5402158929477_4.png)  
 上图所示，生产者（P）生产消息1并将消息1推送到Exchange，由于Exchange Type=fanout这时候会遵循fanout的规则将消息推送到所有与它绑定Queue，也就是图上的两个Queue以及最后的两个消费者消费。  
 
 * **Topic：** 主题交换器，前面提到的direct规则是严格意义上的匹配，换言之Routing Key必须与Binding Key相匹配的时候才将消息传送给Queue，那么topic这个规则就是模糊匹配，可以通过通配符满足一部分规则就可以传送；  
 **具体的约定如下：**  
 1、routing key为一个句点号“. ”分隔的字符串（我们将被句点号“. ”分隔开的每一段独立的字符串称为一个单词），如“stock.usd.nyse”、“nyse.vmw”、“quick.orange.rabbit”；  
 2、binding key与routing key一样也是句点号“. ”分隔的字符串；  
-3、binding key中可以存在两种特殊字符“\*”与“#”，用于做模糊匹配，其中“\*”用于匹配一个单词，“#”用于匹配多个单词（可以是零个）；  
-
+3、binding key中可以存在两种特殊字符“\*”与“#”，用于做模糊匹配，其中“\*”用于匹配一个单词，“#”用于匹配多个单词（可以是零个）；   
+![主题交换器示意图](https://github-1251498502.cos.ap-chongqing.myqcloud.com/RabbitMQ/2799767-82c5402158929477_6.png)     
+当生产者发送消息Routing Key=F.C.E的时候，这时候只满足Queue1，所以会被路由到Queue1中，如果Routing Key=A.C.E这时候会被同时路由到Queue1和Queue2中，如果Routing Key=A.F.B时，这里只会发送一条消息到Queue2中。
  
 
 
