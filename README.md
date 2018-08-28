@@ -55,7 +55,6 @@ RabbitMQ中，producer不是通过信道直接将消息发送给queue，而是�
 在生产消息的时候，我们往消息的headers中附加了user:admin,pwd:123456  
 ``` C# 
 //创建返回一个新的频道
-//创建返回一个新的频道
 using (var channel = RabbitMqHelper.GetConnection().CreateModel())
 {
     //创建properties
@@ -75,6 +74,62 @@ using (var channel = RabbitMqHelper.GetConnection().CreateModel())
 }
 Console.ReadKey();
 ```
+
+在consumer中，我们可以选择创建两种方式，any/all。绑定的时候我们放了一些匹配项在里面，也就是如果 user:admin、pwd:123456 headers类型的exchange就可以把消息推到queue中   
+``` C#
+bool flag = true;
+string pattern = "";
+while (flag)
+{
+    Console.WriteLine("请选择headers匹配模式  1(any)/2(all)");
+    pattern = Console.ReadLine();
+    if (pattern == "1" || pattern == "2")
+        flag = false;
+    else
+        Console.Write("请做出正确的选择");
+}
+
+using (var channel = RabbitMqHelper.GetConnection().CreateModel())
+{
+    //根据声明使用的队列
+    var headersType = pattern == "1" ? "any" : "all";
+
+    //声明交换机 headers模式
+    channel.ExchangeDeclare("headersExchange", ExchangeType.Headers, true, false);
+    channel.QueueDeclare("headersQueue", true, false, false, null);
+
+    //进行绑定
+    channel.QueueBind("headersQueue", "headersExchange", string.Empty, new Dictionary<string, object>
+    {
+        //第一个匹配格式 ，第二与第三个则是匹配项
+        { "x-match",headersType},
+        { "user","admin"},
+        { "pwd","123456"}
+    });
+	
+    //创建consumbers
+    var consumer = new EventingBasicConsumer(channel);
+    consumer.Received += (sender, e) =>
+    {
+        var msg = Encoding.UTF8.GetString(e.Body);
+
+        Console.WriteLine($"{msg}");
+    };
+
+    //进行消费
+    channel.BasicConsume("headersQueue", true, consumer);
+    Console.ReadKey();
+}
+```  
+这里实验一个all的类型：  
+首先把consumer运行起来，第一次我们的生产者的headers中只一个项匹配,可以看到消息是发布出去了，但是consumer并没有从queue中收到，也就是这边是不匹配的 exchange并没有把消息推到queue。  
+![all类型的匹配](https://github-1251498502.cos.ap-chongqing.myqcloud.com/RabbitMQ/2799767-82c5402158929477_7.png)  
+在webui中也是可以看到queue中是没有任何消息的  
+![all类型的匹配](https://github-1251498502.cos.ap-chongqing.myqcloud.com/RabbitMQ/2799767-82c5402158929477_8.png)  
+这时再把生产者的headers中user也加上,现在是完全匹配的再发布一次消息,发布的消息被consumer消费掉了。  
+![all类型的匹配](https://github-1251498502.cos.ap-chongqing.myqcloud.com/RabbitMQ/2799767-82c5402158929477_9.png)  
+
+
  
 
 
