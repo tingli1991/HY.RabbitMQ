@@ -46,7 +46,7 @@ RabbitMQ中，producer不是通过信道直接将消息发送给queue，而是�
 2、binding key与routing key一样也是句点号“. ”分隔的字符串；  
 3、binding key中可以存在两种特殊字符“*”与“#”，用于做模糊匹配，其中“*”用于匹配一个单词，“#”用于匹配多个单词（可以是零个）；  
 
-
+ 
 
 
 
