@@ -1,0 +1,22 @@
+﻿{
+  "ConnectionStrings": {
+    "Host": "192.168.3.10",
+    "Port": 5672,
+    "TimeOut": 30,
+    "UserName": "admin",
+    "Password": "ChinaNet910111"
+  },
+  "ServiceNode": {
+    "AbsolutePath": false,
+    "PluginPath": "/Consumers",
+    "Services": [
+      {
+        "QueueName": "Queue.Rpc.SmsConsumer",
+        "AssemblyName": "Stack.RabbitMQ.ConsoleTest",
+        "NameSpace": "Stack.RabbitMQ.ConsoleTest.Consumers",
+        "ClassName": "SmsConsumer",
+        "Durable": true
+      }
+    ]
+  }
+}
