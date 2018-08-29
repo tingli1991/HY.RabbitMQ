@@ -6,7 +6,7 @@ namespace Stack.RabbitMQ.Utils
     /// <summary>
     /// 反射业务处理类
     /// </summary>
-    public class ReflectionUtil
+    public sealed class ReflectionUtil
     {
         /// <summary>
         /// 创建对象实例

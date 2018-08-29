@@ -2,42 +2,21 @@
 using Stack.RabbitMQ.Config;
 using Stack.RabbitMQ.Utils;
 using System;
-using System.Collections.Concurrent;
 using System.IO;
 
 namespace Stack.RabbitMQ
 {
     /// <summary>
-    /// RabbitMQ上下文
+    /// RabbitMQ编译对象
     /// </summary>
-    public class RabbitmqBuilder
+    public sealed class RabbitmqBuilder
     {
-        /// <summary>
-        /// Socket链接
-        /// </summary>
-        public static IConnection Connection;
-
-        /// <summary>
-        /// 配置文件
-        /// </summary>
-        public static RabbitmqConfig Config = null;
-
-        /// <summary>
-        /// 链接工厂
-        /// </summary>
-        public static ConnectionFactory ConnectionFactory;
-
-        /// <summary>
-        /// RabbitMQ建议客户端线程之间不要共用Model，至少要保证共用Model的线程发送消息必须是串行的，但是建议尽量共用Connection
-        /// </summary>
-        public static readonly ConcurrentDictionary<string, IModel> ModelDic = new ConcurrentDictionary<string, IModel>();
-
         /// <summary>
         /// 配置文件初始化
         /// </summary>
         /// <param name="fileDir">文件目录</param>
         /// <param name="fileName">文件名称</param>
-        internal static IConnection Configure(string fileDir, string fileName)
+        public static RabbitmqBuilder Configure(string fileDir, string fileName)
         {
             var configPath = Path.Combine(fileDir, fileName);
             if (!File.Exists(configPath))
@@ -47,16 +26,16 @@ namespace Stack.RabbitMQ
             }
 
             //加载配置文件
-            Config = AppSettingsUtil.GetValue<RabbitmqConfig>(fileDir, fileName);
-            if (Config == null)
+            RabbitmqContext.Config = AppSettingsUtil.GetValue<RabbitmqConfig>(fileDir, fileName);
+            if (RabbitmqContext.Config == null)
             {
                 string errMsg = $"配置文件：{configPath}初始化异常！！！";
                 throw new TypeInitializationException("RabbitmqConfig", null);
             }
 
             //创建链接工厂
-            var connectionStrings = Config.ConnectionStrings;
-            ConnectionFactory = new ConnectionFactory()
+            var connectionStrings = RabbitmqContext.Config.ConnectionStrings;
+            RabbitmqContext.ConnectionFactory = new ConnectionFactory()
             {
                 Port = connectionStrings.Port,
                 AutomaticRecoveryEnabled = true,
@@ -67,8 +46,8 @@ namespace Stack.RabbitMQ
             };
 
             //创建链接
-            Connection = ConnectionFactory.CreateConnection();
-            return Connection;
+            RabbitmqContext.Connection = RabbitmqContext.ConnectionFactory.CreateConnection();
+            return new RabbitmqBuilder();
         }
     }
 }

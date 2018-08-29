@@ -7,7 +7,7 @@ namespace Stack.RabbitMQ.Consumers
     /// <summary>
     /// 消费者工厂
     /// </summary>
-    public class ConsumerFactory
+    class ConsumerFactory
     {
         /// <summary>
         /// 确保线程同步的对象锁

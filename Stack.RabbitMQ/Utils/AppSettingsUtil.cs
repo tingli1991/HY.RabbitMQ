@@ -7,7 +7,7 @@ namespace Stack.RabbitMQ.Utils
     /// <summary>
     /// 应用程序配置处理类
     /// </summary>
-    public class AppSettingsUtil
+    public sealed class AppSettingsUtil
     {
         /// <summary>
         /// 线程对象锁

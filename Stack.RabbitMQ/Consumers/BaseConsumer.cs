@@ -6,7 +6,7 @@ namespace Stack.RabbitMQ.Consumers
     /// <summary>
     /// 基础消费者
     /// </summary>
-    public class BaseConsumer
+    class BaseConsumer
     {
         /// <summary>
         /// 消息连接通道
@@ -37,20 +37,10 @@ namespace Stack.RabbitMQ.Consumers
         }
 
         /// <summary>
-        /// 停止服务
-        /// </summary>
-        public virtual void OnStop() { }
-
-        /// <summary>
-        /// 重启服务
-        /// </summary>
-        public virtual void ReStart() { }
-
-        /// <summary>
-        /// 启动服务
+        /// 运行消费者
         /// </summary>
         /// <param name="connectionStrings">连接字符串</param>
         /// <param name="serviceConfiguration"></param>
-        public virtual void OnStart() { }
+        public virtual void Run() { }
     }
 }

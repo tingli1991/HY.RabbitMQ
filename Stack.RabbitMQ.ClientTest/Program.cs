@@ -1,5 +1,4 @@
 ﻿using Stack.RabbitMQ.Enums;
-using Stack.RabbitMQ.Extensions;
 using Stack.RabbitMQ.Producers;
 using System;
 using System.IO;
@@ -19,16 +18,15 @@ namespace Stack.RabbitMQ.ClientTest
         {
             try
             {
-                RabbitmqExtensions
-               .Configure(Path.Combine(Directory.GetCurrentDirectory(), "Config"), "rabbitmq.json");
+                string fileDir = Path.Combine(Directory.GetCurrentDirectory(), "Config");
+                RabbitmqBuilder.Configure(fileDir, "rabbitmq.json");
 
                 var model = new
                 {
                     Id = 001,
                     Content = "测试消息体"
                 };
-
-                var response = ProducerFactory.Execute("Queue.Rpc.SmsConsumer", ExchangeType.RPC, model, "Exchange.Direct");
+                var response = ProducerFactory.Execute(ExchangeType.Direct, model, "Exchange.Direct", "Exchange.Direct.Queue001");
                 Console.WriteLine($"运行结果：{response}");
             }
             catch (Exception ex)

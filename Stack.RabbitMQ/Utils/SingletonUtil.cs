@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace Stack.RabbitMQ.Utils
 {
     /// <summary>
     /// 单利处理类
     /// </summary>
-    class SingletonUtil
+    sealed class SingletonUtil
     {
         private static readonly object _lock = new object();
         private static Dictionary<string, object> instanceDic = new Dictionary<string, object>();

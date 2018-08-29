@@ -15,9 +15,10 @@ namespace Stack.RabbitMQ.ServiceTest
         /// <param name="args"></param>
         static void Main(string[] args)
         {
-            RabbitmqExtensions
-                .Configure(Path.Combine(Directory.GetCurrentDirectory(), "Config"), "rabbitmq.json")
-                .OnStart();
+            string fileDir = Path.Combine(Directory.GetCurrentDirectory(), "Config");
+            RabbitmqBuilder.Configure(fileDir, "rabbitmq.json")
+                .UseLog4net(Path.Combine(fileDir, "log4net.config"))
+                .RunServiceHost();
 
             Console.WriteLine("启动完成！！！");
             Console.ReadLine();

@@ -3,14 +3,13 @@ using RabbitMQ.Client.Events;
 using Stack.RabbitMQ.Config;
 using Stack.RabbitMQ.Extensions;
 using Stack.RabbitMQ.Utils;
-using System.Text;
 
 namespace Stack.RabbitMQ.Consumers
 {
     /// <summary>
     /// 直连交换器
     /// </summary>
-    public class DirectConsumer : BaseConsumer
+    class DirectConsumer : BaseConsumer
     {
         /// <summary>
         /// 构造函数
@@ -25,9 +24,9 @@ namespace Stack.RabbitMQ.Consumers
         }
 
         /// <summary>
-        /// 启动
+        /// 运行
         /// </summary>
-        public override void OnStart()
+        public override void Run()
         {
             Channel.ExchangeDeclare(exchange: Config.ExchangeName, type: "direct");//声明交换机
             QueueDeclareOk queueDeclare = Channel.QueueDeclare(queue: Config.QueueName, durable: Config.Durable, exclusive: false, autoDelete: false, arguments: null);

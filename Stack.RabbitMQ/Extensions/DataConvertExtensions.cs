@@ -6,7 +6,7 @@ namespace Stack.RabbitMQ.Extensions
     /// <summary>
     /// 数据转换
     /// </summary>
-    public static class DataConvertExtensions
+    static class DataConvertExtensions
     {
         /// <summary> 
         /// 将一个object对象序列化，返回一个byte[]         

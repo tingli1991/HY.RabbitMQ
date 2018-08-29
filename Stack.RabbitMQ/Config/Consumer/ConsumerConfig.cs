@@ -6,7 +6,7 @@ namespace Stack.RabbitMQ.Config
     /// <summary>
     /// 消费者配置节点
     /// </summary>
-    public class ConsumerConfig
+    class ConsumerConfig
     {
         /// <summary>
         /// 是否使用绝对路径（默认：fasle表示相对路径）

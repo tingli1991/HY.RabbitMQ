@@ -9,7 +9,7 @@ namespace Stack.RabbitMQ.Consumers
     /// <summary>
     /// RPC消费者
     /// </summary>
-    public class RPCConsumer : BaseConsumer
+    class RPCConsumer : BaseConsumer
     {
         /// <summary>
         /// 构造函数
@@ -26,7 +26,7 @@ namespace Stack.RabbitMQ.Consumers
         /// <summary>
         /// 启动
         /// </summary>
-        public override void OnStart()
+        public override void Run()
         {
             Channel.QueueDeclare(queue: Config.QueueName, durable: Config.Durable, exclusive: false, autoDelete: false, arguments: null);
             Channel.BasicQos(0, 1, false);

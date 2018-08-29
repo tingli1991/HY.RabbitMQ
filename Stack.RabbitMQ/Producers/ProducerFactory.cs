@@ -23,41 +23,41 @@ namespace Stack.RabbitMQ.Producers
         /// <summary>
         /// 根据点赞类型获取对象实例
         /// </summary>
-        /// <param name="consumerType">消费者类型</param>
+        /// <param name="exchangeType">消费者类型</param>
         /// <param name="constructorArgs">可变的构造函数列表</param>
         /// <returns></returns>
-        private static BaseProducer GetInstance(ExchangeType consumerType, params object[] constructorArgs)
+        private static BaseProducer GetInstance(ExchangeType exchangeType, params object[] constructorArgs)
         {
-            if (!InstanceCacheDic.ContainsKey(consumerType))
+            if (!InstanceCacheDic.ContainsKey(exchangeType))
             {
                 lock (locker)
                 {
-                    if (!InstanceCacheDic.ContainsKey(consumerType))
+                    if (!InstanceCacheDic.ContainsKey(exchangeType))
                     {
                         string assemblyName = "Stack.RabbitMQ.Producers";
-                        string className = $"{assemblyName}.{consumerType.ToString()}Producer";
+                        string className = $"{assemblyName}.{exchangeType.ToString()}Producer";
                         BaseProducer instance = (BaseProducer)Activator.CreateInstance(Type.GetType(className), constructorArgs);
-                        InstanceCacheDic.Add(consumerType, instance);
+                        InstanceCacheDic.Add(exchangeType, instance);
                     }
                 }
             }
-            return InstanceCacheDic[consumerType];
+            return InstanceCacheDic[exchangeType];
         }
 
         /// <summary>
         /// 执行方法
         /// </summary>
-        /// <param name="routingKey"></param>
-        /// <param name="consumerType"></param>
-        /// <param name="messageBody"></param>
-        /// <param name="exchangeName"></param>
-        /// <param name="durabled"></param>
-        /// <param name="timeOut"></param>
+        /// <param name="exchangeType">交换机类型</param>
+        /// <param name="messageBody">消息内容</param>
+        /// <param name="exchangeName">交换机名称</param>
+        /// <param name="routingKey">路由Key</param>
+        /// <param name="durabled">是否持久化</param>
+        /// <param name="timeOut">超时时间</param>
         /// <returns></returns>
-        public static ResponseResult Execute(string routingKey, ExchangeType consumerType, object messageBody, string exchangeName, bool durabled = true, ushort timeOut = 30)
+        public static ResponseResult Execute(ExchangeType exchangeType, object messageBody, string exchangeName = "", string routingKey = "", bool durabled = true, ushort timeOut = 30)
         {
-            var model = RabbitmqBuilder.ModelDic.GetOrAdd(routingKey, RabbitmqBuilder.Connection.CreateModel());
-            var instance = GetInstance(consumerType, routingKey, model);
+            var model = RabbitmqContext.ModelDic.GetOrAdd(routingKey, RabbitmqContext.Connection.CreateModel());
+            var instance = GetInstance(exchangeType, routingKey, model);
             return instance.Execute(messageBody, exchangeName, routingKey, durabled, timeOut);
         }
     }

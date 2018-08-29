@@ -9,7 +9,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{94EFD894-E
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stack.RabbitMQ.ServiceTest", "Stack.RabbitMQ.ServiceTest\Stack.RabbitMQ.ServiceTest.csproj", "{51A18867-E003-4A1D-9D01-E093000839A3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stack.RabbitMQ.ClientTest", "Stack.RabbitMQ.ClientTest\Stack.RabbitMQ.ClientTest.csproj", "{43F04877-9257-4A66-A14C-88861E38C266}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stack.RabbitMQ.ClientTest", "Stack.RabbitMQ.ClientTest\Stack.RabbitMQ.ClientTest.csproj", "{43F04877-9257-4A66-A14C-88861E38C266}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

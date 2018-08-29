@@ -3,7 +3,7 @@
     /// <summary>
     /// 连接字符串
     /// </summary>
-    public class ConnectionStringsConfig
+    class ConnectionStringsConfig
     {
         /// <summary>
         /// 主机地址
