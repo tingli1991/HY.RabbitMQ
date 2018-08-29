@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
+using RabbitMQ.Client;
 using System;
 using System.IO;
 
@@ -72,9 +73,9 @@ namespace Stack.RabbitMQ.Extensions
         /// </summary>
         /// <param name="configuration"></param>
         /// <returns></returns>
-        public static void Configure()
+        public static IConnection Configure()
         {
-            Configure(Directory.GetCurrentDirectory(), "rabbitmq.json");
+            return Configure(Directory.GetCurrentDirectory(), "rabbitmq.json");
         }
 
         /// <summary>
@@ -84,9 +85,18 @@ namespace Stack.RabbitMQ.Extensions
         /// <param name="fileDir">配置文件路径</param
         /// <param name="fileName">文件名称</param>
         /// <returns></returns>
-        public static void Configure(string fileDir, string fileName)
+        public static IConnection Configure(string fileDir, string fileName)
         {
-            RabbitmqContext.Configure(fileDir, fileName);
+            return RabbitmqBuilder.Configure(fileDir, fileName);
+        }
+
+        /// <summary>
+        /// 启动
+        /// </summary>
+        /// <param name="connection"></param>
+        public static void OnStart(this IConnection connection)
+        {
+            new MQServiceHost().OnStart();
         }
     }
 }

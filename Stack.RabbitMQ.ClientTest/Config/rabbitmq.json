@@ -1,0 +1,23 @@
+﻿{
+  "ConnectionStrings": {
+    "Host": "192.168.0.102",
+    "Port": 5672,
+    "TimeOut": 30,
+    "UserName": "admin",
+    "Password": "admin123"
+  },
+  "Consumer": {
+    "AbsolutePath": false,
+    "PluginPath": "",
+    "Nodes": [
+      {
+        "QueueName": "Queue.Rpc.SmsConsumer",
+        "AssemblyName": "Stack.RabbitMQ.ServiceTest",
+        "NameSpace": "Stack.RabbitMQ.ServiceTest.Consumers",
+        "ClassName": "SmsConsumer",
+        "Durable": true,
+        "ConsumerType": "Rpc"
+      }
+    ]
+  }
+}

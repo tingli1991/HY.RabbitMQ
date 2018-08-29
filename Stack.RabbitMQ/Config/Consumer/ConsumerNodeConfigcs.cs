@@ -1,33 +1,12 @@
-﻿using System.Collections.Generic;
-using System.IO;
+﻿using Stack.RabbitMQ.Enums;
+using System.Collections.Generic;
 
 namespace Stack.RabbitMQ.Config
 {
     /// <summary>
-    /// 服务端配置节点
-    /// </summary>
-    public class ServiceNodeConfig
-    {
-        /// <summary>
-        /// 是否使用绝对路径（默认：fasle表示相对路径）
-        /// </summary>
-        public bool AbsolutePath { get; set; } = false;
-
-        /// <summary>
-        /// 服务列表
-        /// </summary>
-        public List<ServiceConfig> Services { get; set; }
-
-        /// <summary>
-        /// 插件存放路径
-        /// </summary>
-        public string PluginPath { get; set; } = Directory.GetCurrentDirectory();
-    }
-
-    /// <summary>
     /// 服务配置
     /// </summary>
-    public class ServiceConfig
+    public class ConsumerNodeConfig
     {
         /// <summary>
         /// 队列名称
@@ -53,5 +32,20 @@ namespace Stack.RabbitMQ.Config
         /// 是否持久化（默认：true表示需要持久化）
         /// </summary>
         public bool Durable { get; set; } = true;
+
+        /// <summary>
+        /// 交换机类型
+        /// </summary>
+        public ExchangeType ExchangeType { get; set; }
+
+        /// <summary>
+        /// 交换机名称
+        /// </summary>
+        public string ExchangeName { get; set; }
+
+        /// <summary>
+        /// 路由键
+        /// </summary>
+        public List<string> RoutingKeys { get; set; }
     }
 }

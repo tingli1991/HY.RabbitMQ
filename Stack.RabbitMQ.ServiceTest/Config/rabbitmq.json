@@ -1,0 +1,37 @@
+﻿{
+  "ConnectionStrings": {
+    "Host": "192.168.0.102",
+    "Port": 5672,
+    "TimeOut": 30,
+    "UserName": "admin",
+    "Password": "admin123"
+  },
+  "Queues": [
+    { "QueueName": "Queue.Rpc.SmsConsumer001" },
+    { "QueueName": "Queue.Rpc.SmsConsumer002" }
+  ],
+  "Consumer": {
+    "AbsolutePath": false,
+    "PluginPath": "",
+    "Nodes": [
+      {
+        "QueueName": "Queue.Rpc.SmsConsumer",
+        "AssemblyName": "Stack.RabbitMQ.ServiceTest",
+        "NameSpace": "Stack.RabbitMQ.ServiceTest.Consumers",
+        "ClassName": "SmsConsumer",
+        "Durable": true,
+        "ExchangeType": "Rpc"
+      },
+      {
+        "QueueName": "Queue.Direct.SmsConsumer",
+        "AssemblyName": "Stack.RabbitMQ.ServiceTest",
+        "NameSpace": "Stack.RabbitMQ.ServiceTest.Consumers",
+        "ClassName": "SmsConsumer",
+        "Durable": true,
+        "ExchangeType": "Direct",
+        "ExchangeName": "Exchange.Direct",
+        "RoutingKeys": [ "" ]
+      }
+    ]
+  }
+}

@@ -5,9 +5,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Param\" />
-    <Folder Include="Result\" />
-    <Folder Include="Factory\" />
+    <Compile Remove="Factory\**" />
+    <EmbeddedResource Remove="Factory\**" />
+    <None Remove="Factory\**" />
   </ItemGroup>
 
   <ItemGroup>

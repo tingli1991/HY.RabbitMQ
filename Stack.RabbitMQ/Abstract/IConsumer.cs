@@ -1,4 +1,7 @@
-﻿namespace Stack.RabbitMQ
+﻿using Stack.RabbitMQ.Param;
+using Stack.RabbitMQ.Result;
+
+namespace Stack.RabbitMQ
 {
     /// <summary>
     /// 消费者接口
@@ -8,6 +11,6 @@
         /// <summary>
         /// 队列处理方法
         /// </summary>
-        void Handler();
+        ResponseResult Handler(ConsumerContext context);
     }
 }

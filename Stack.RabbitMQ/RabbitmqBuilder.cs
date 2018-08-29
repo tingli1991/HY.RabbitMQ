@@ -10,7 +10,7 @@ namespace Stack.RabbitMQ
     /// <summary>
     /// RabbitMQ上下文
     /// </summary>
-    public class RabbitmqContext
+    public class RabbitmqBuilder
     {
         /// <summary>
         /// Socket链接
@@ -37,7 +37,7 @@ namespace Stack.RabbitMQ
         /// </summary>
         /// <param name="fileDir">文件目录</param>
         /// <param name="fileName">文件名称</param>
-        internal static void Configure(string fileDir, string fileName)
+        internal static IConnection Configure(string fileDir, string fileName)
         {
             var configPath = Path.Combine(fileDir, fileName);
             if (!File.Exists(configPath))
@@ -68,6 +68,7 @@ namespace Stack.RabbitMQ
 
             //创建链接
             Connection = ConnectionFactory.CreateConnection();
+            return Connection;
         }
     }
 }
