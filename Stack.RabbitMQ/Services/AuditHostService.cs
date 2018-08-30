@@ -57,6 +57,9 @@ namespace Stack.RabbitMQ.Services
             channel.QueueDeclare(auditQueueName, true, false, false, null);//声明审计队列
             foreach (ConsumerNodeConfig node in config.Consumer.Nodes)
             {
+                if (node.ExchangeType == 0)
+                    continue;
+
                 channel.ExchangeDeclare(node.ExchangeName, node.ExchangeType.ToString().ToLower());//申明交换机
                 channel.QueueBind(auditQueueName, node.ExchangeName, node.QueueName);//建立队列与交换机的绑定关系
             }
