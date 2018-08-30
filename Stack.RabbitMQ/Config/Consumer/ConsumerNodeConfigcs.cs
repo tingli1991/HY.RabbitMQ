@@ -1,5 +1,4 @@
 ﻿using Stack.RabbitMQ.Enums;
-using System.Collections.Generic;
 
 namespace Stack.RabbitMQ.Config
 {
@@ -39,13 +38,13 @@ namespace Stack.RabbitMQ.Config
         public ExchangeType ExchangeType { get; set; }
 
         /// <summary>
+        /// 模式类型
+        /// </summary>
+        public PatternType PatternType { get; set; }
+
+        /// <summary>
         /// 交换机名称
         /// </summary>
         public string ExchangeName { get; set; }
-
-        /// <summary>
-        /// 路由键
-        /// </summary>
-        public List<string> RoutingKeys { get; set; }
     }
 }

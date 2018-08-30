@@ -7,9 +7,9 @@ using Stack.RabbitMQ.Utils;
 namespace Stack.RabbitMQ.Consumers
 {
     /// <summary>
-    /// 直连交换器
+    /// 默认的消费者模式
     /// </summary>
-    class DirectConsumer : BaseConsumer
+    class DefaultConsumer : BaseConsumer
     {
         /// <summary>
         /// 构造函数
@@ -17,7 +17,7 @@ namespace Stack.RabbitMQ.Consumers
         /// <param name="pluginConfigPath"></param>
         /// <param name="channel"></param>
         /// <param name="config"></param>
-        public DirectConsumer(string pluginConfigPath, IModel channel, ConsumerNodeConfig config)
+        public DefaultConsumer(string pluginConfigPath, IModel channel, ConsumerNodeConfig config)
             : base(pluginConfigPath, channel, config)
         {
 
@@ -29,13 +29,8 @@ namespace Stack.RabbitMQ.Consumers
         public override void Run()
         {
             Channel.ExchangeDeclare(exchange: Config.ExchangeName, type: "direct");//声明交换机
-            QueueDeclareOk queueDeclare = Channel.QueueDeclare(queue: Config.QueueName, durable: Config.Durable, exclusive: false, autoDelete: false, arguments: null);
-            var queueName = queueDeclare.QueueName;//当前队列的队列名称
-            foreach (var routingKey in Config.RoutingKeys)
-            {
-                //将交换机跟队列建立绑定关系
-                Channel.QueueBind(queue: queueName, exchange: Config.ExchangeName, routingKey: routingKey);
-            }
+            Channel.QueueDeclare(queue: Config.QueueName, durable: Config.Durable, exclusive: false, autoDelete: false, arguments: null);//声明队列
+            Channel.QueueBind(queue: Config.QueueName, exchange: Config.ExchangeName, routingKey: Config.QueueName);//建立队列与交换机的绑定关系
 
             var consumer = new EventingBasicConsumer(Channel);
             consumer.Received += (model, args) =>
@@ -43,13 +38,11 @@ namespace Stack.RabbitMQ.Consumers
                 var instance = (IConsumer)SingletonUtil.GetInstance(PluginConfigPath, Config.AssemblyName, Config.NameSpace, Config.ClassName);
                 var response = instance.Handler(new Param.ConsumerContext()
                 {
-                    Config = Config,
                     BodyBytes = args.Body,
-                    Body = args.Body.ToObject(),
-                    PluginConfigPath = PluginConfigPath
+                    Body = args.Body.ToObject()
                 });
             };
-            Channel.BasicConsume(queue: queueName, autoAck: true, consumer: consumer);
+            Channel.BasicConsume(queue: Config.QueueName, autoAck: false, consumer: consumer);
         }
     }
 }

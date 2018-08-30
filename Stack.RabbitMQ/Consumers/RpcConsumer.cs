@@ -7,9 +7,9 @@ using Stack.RabbitMQ.Utils;
 namespace Stack.RabbitMQ.Consumers
 {
     /// <summary>
-    /// RPC消费者
+    /// RPC消费者模式
     /// </summary>
-    class RPCConsumer : BaseConsumer
+    class RpcConsumer : BaseConsumer
     {
         /// <summary>
         /// 构造函数
@@ -17,7 +17,7 @@ namespace Stack.RabbitMQ.Consumers
         /// <param name="pluginConfigPath"></param>
         /// <param name="channel"></param>
         /// <param name="config"></param>
-        public RPCConsumer(string pluginConfigPath, IModel channel, ConsumerNodeConfig config)
+        public RpcConsumer(string pluginConfigPath, IModel channel, ConsumerNodeConfig config)
             : base(pluginConfigPath, channel, config)
         {
 
@@ -42,10 +42,8 @@ namespace Stack.RabbitMQ.Consumers
                 var instance = (IConsumer)SingletonUtil.GetInstance(PluginConfigPath, Config.AssemblyName, Config.NameSpace, Config.ClassName);
                 var response = instance.Handler(new Param.ConsumerContext()
                 {
-                    Config = Config,
                     BodyBytes = args.Body,
-                    Body = args.Body.ToObject(),
-                    PluginConfigPath = PluginConfigPath
+                    Body = args.Body.ToObject()
                 });
                 Channel.BasicPublish(exchange: "", routingKey: properties.ReplyTo, basicProperties: replyProperties, body: response.ToBytes());
             };

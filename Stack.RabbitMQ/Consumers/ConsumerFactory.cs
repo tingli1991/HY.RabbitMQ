@@ -17,30 +17,30 @@ namespace Stack.RabbitMQ.Consumers
         /// <summary>
         /// 缓存字典
         /// </summary>
-        private static Dictionary<ExchangeType, BaseConsumer> InstanceCacheDic = new Dictionary<ExchangeType, BaseConsumer>();
+        private static Dictionary<PatternType, BaseConsumer> InstanceCacheDic = new Dictionary<PatternType, BaseConsumer>();
 
         /// <summary>
         /// 根据点赞类型获取对象实例
         /// </summary>
-        /// <param name="consumerType">消费者类型</param>
+        /// <param name="patternType">消费者类型</param>
         /// <param name="constructorArgs">可变的构造函数列表</param>
         /// <returns></returns>
-        public static BaseConsumer GetInstance(ExchangeType consumerType, params object[] constructorArgs)
+        public static BaseConsumer GetInstance(PatternType patternType, params object[] constructorArgs)
         {
-            if (!InstanceCacheDic.ContainsKey(consumerType))
+            if (!InstanceCacheDic.ContainsKey(patternType))
             {
                 lock (locker)
                 {
-                    if (!InstanceCacheDic.ContainsKey(consumerType))
+                    if (!InstanceCacheDic.ContainsKey(patternType))
                     {
                         string assemblyName = "Stack.RabbitMQ.Consumers";
-                        string className = $"{assemblyName}.{consumerType.ToString()}Consumer";
+                        string className = $"{assemblyName}.{patternType.ToString()}Consumer";
                         BaseConsumer instance = (BaseConsumer)Activator.CreateInstance(Type.GetType(className), constructorArgs);
-                        InstanceCacheDic.Add(consumerType, instance);
+                        InstanceCacheDic.Add(patternType, instance);
                     }
                 }
             }
-            return InstanceCacheDic[consumerType];
+            return InstanceCacheDic[patternType];
         }
     }
 }

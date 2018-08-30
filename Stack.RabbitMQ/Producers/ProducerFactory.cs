@@ -56,7 +56,7 @@ namespace Stack.RabbitMQ.Producers
         /// <returns></returns>
         public static ResponseResult Execute(ExchangeType exchangeType, object messageBody, string exchangeName = "", string routingKey = "", bool durabled = true, ushort timeOut = 30)
         {
-            var model = RabbitmqContext.ModelDic.GetOrAdd(routingKey, RabbitmqContext.Connection.CreateModel());
+            var model = RabbitmqContext.ChannelDic.GetOrAdd(routingKey, RabbitmqContext.Connection.CreateModel());
             var instance = GetInstance(exchangeType, routingKey, model);
             return instance.Execute(messageBody, exchangeName, routingKey, durabled, timeOut);
         }

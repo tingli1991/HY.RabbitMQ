@@ -1,5 +1,5 @@
-﻿using Stack.RabbitMQ.Enums;
-using Stack.RabbitMQ.Producers;
+﻿using Microsoft.Extensions.Hosting;
+using Stack.RabbitMQ.Extensions;
 using System;
 using System.IO;
 
@@ -16,24 +16,21 @@ namespace Stack.RabbitMQ.ClientTest
         /// <param name="args"></param>
         static void Main(string[] args)
         {
-            try
-            {
-                string fileDir = Path.Combine(Directory.GetCurrentDirectory(), "Config");
-                RabbitmqBuilder.Configure(fileDir, "rabbitmq.json");
-
-                var model = new
-                {
-                    Id = 001,
-                    Content = "测试消息体"
-                };
-                var response = ProducerFactory.Execute(ExchangeType.Direct, model, "Exchange.Direct", "Exchange.Direct.Queue001");
-                Console.WriteLine($"运行结果：{response}");
-            }
-            catch (Exception ex)
-            {
-
-            }
-            Console.ReadLine();
+            string baseDir = Directory.GetCurrentDirectory();
+            string configDir = Path.Combine(baseDir, "Config");
+            IHost host = CreateDefaultHost(configDir);//创建主机
+            Console.WriteLine("启动完成！！！");
+            host.Run();
         }
+
+        /// <summary>
+        /// 创建编译
+        /// </summary>
+        /// <param name="configDir"></param>
+        /// <returns></returns>
+        static IHost CreateDefaultHost(string configDir) => new HostBuilder()
+            .UseLog4net(Path.Combine(configDir, "log4net.config"))
+            .Configure(configDir, "rabbitmq.json")
+            .Build();
     }
 }

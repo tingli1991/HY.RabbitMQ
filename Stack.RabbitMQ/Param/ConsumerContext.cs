@@ -1,4 +1,5 @@
-﻿using Stack.RabbitMQ.Config;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Stack.RabbitMQ.Param
 {
@@ -7,6 +8,16 @@ namespace Stack.RabbitMQ.Param
     /// </summary>
     public class ConsumerContext
     {
+        /// <summary>
+        /// 交换器名称
+        /// </summary>
+        public string ExchangeName { get; set; }
+
+        /// <summary>
+        /// 路由key
+        /// </summary>
+        public string RoutingKey { get; set; }
+
         /// <summary>
         /// 消息内容
         /// </summary>
@@ -18,13 +29,23 @@ namespace Stack.RabbitMQ.Param
         public byte[] BodyBytes { get; set; }
 
         /// <summary>
-        /// 配置信息
+        /// 消息Id
         /// </summary>
-        public ConsumerNodeConfig Config { get; set; }
+        public string MessageId { get; set; }
 
         /// <summary>
-        /// 插件配置路径
+        /// 时间
         /// </summary>
-        public string PluginConfigPath { get; set; }
+        public DateTime Timestamp { get; set; }
+
+        /// <summary>
+        /// 时间戳
+        /// </summary>
+        public long TimestampUnix { get; set; }
+
+        /// <summary>
+        /// 头部信息
+        /// </summary>
+        public IDictionary<string, object> Headers { get; set; }
     }
 }
