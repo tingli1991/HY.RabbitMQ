@@ -35,8 +35,7 @@ namespace Stack.RabbitMQ.Services
         /// </summary>
         public AuditHostService()
         {
-            string key = Guid.NewGuid().ToString("N");
-            channel = RabbitmqContext.ChannelDic.GetOrAdd(key, RabbitmqContext.Connection.CreateModel());
+            channel = RabbitmqContext.Connection.CreateModel();
         }
 
         /// <summary>
@@ -143,7 +142,9 @@ namespace Stack.RabbitMQ.Services
         /// <returns></returns>
         public Task StopAsync(CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            Dispose();//释放资源
+            _log.Info($"【审计主机】停止完成！！！");
+            return Task.CompletedTask;
         }
 
         /// <summary>

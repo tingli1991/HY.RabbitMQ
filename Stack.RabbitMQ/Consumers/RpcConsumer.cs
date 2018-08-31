@@ -26,7 +26,7 @@ namespace Stack.RabbitMQ.Consumers
         /// <summary>
         /// 启动
         /// </summary>
-        public override void Run()
+        public override void Start()
         {
             Channel.QueueDeclare(queue: Config.QueueName, durable: Config.Durable, exclusive: false, autoDelete: false, arguments: null);
             Channel.BasicQos(0, 1, false);
@@ -39,7 +39,7 @@ namespace Stack.RabbitMQ.Consumers
                 replyProperties.CorrelationId = properties.CorrelationId;
                 Channel.BasicAck(deliveryTag: args.DeliveryTag, multiple: false);
 
-                var instance = (IConsumer)SingletonUtil.GetInstance(PluginConfigPath, Config.AssemblyName, Config.NameSpace, Config.ClassName);
+                var instance = (IConsumer)SingletonUtil.GetInstance(PluginPath, Config.AssemblyName, Config.NameSpace, Config.ClassName);
                 var response = instance.Handler(new Param.ConsumerContext()
                 {
                     BodyBytes = args.Body,

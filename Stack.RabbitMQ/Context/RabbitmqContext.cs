@@ -28,11 +28,7 @@ namespace Stack.RabbitMQ
         /// 链接工厂
         /// </summary>
         public static ConnectionFactory ConnectionFactory;
-        /// <summary>
-        /// RabbitMQ建议客户端线程之间不要共用Model，至少要保证共用Model的线程发送消息必须是串行的，但是建议尽量共用Connection
-        /// </summary>
-        public static readonly ConcurrentDictionary<string, IModel> ChannelDic = new ConcurrentDictionary<string, IModel>();
-
+      
         /// <summary>
         /// 配置文件初始化
         /// </summary>

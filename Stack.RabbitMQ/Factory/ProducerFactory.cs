@@ -1,9 +1,10 @@
 ﻿using Stack.RabbitMQ.Enums;
+using Stack.RabbitMQ.Producers;
 using Stack.RabbitMQ.Result;
 using System;
 using System.Collections.Generic;
 
-namespace Stack.RabbitMQ.Producers
+namespace Stack.RabbitMQ.Factory
 {
     /// <summary>
     /// 生产者
@@ -56,9 +57,11 @@ namespace Stack.RabbitMQ.Producers
         /// <returns></returns>
         public static ResponseResult Execute(ExchangeType exchangeType, object messageBody, string exchangeName = "", string routingKey = "", bool durabled = true, ushort timeOut = 30)
         {
-            var model = RabbitmqContext.ChannelDic.GetOrAdd(routingKey, RabbitmqContext.Connection.CreateModel());
-            var instance = GetInstance(exchangeType, routingKey, model);
-            return instance.Execute(messageBody, exchangeName, routingKey, durabled, timeOut);
+            using (var channel= RabbitmqContext.Connection.CreateModel())
+            {
+                var instance = GetInstance(exchangeType, routingKey, channel);
+                return instance.Execute(messageBody, exchangeName, routingKey, durabled, timeOut);
+            }
         }
     }
 }

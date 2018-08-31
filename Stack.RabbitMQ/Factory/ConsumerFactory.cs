@@ -1,8 +1,9 @@
-﻿using Stack.RabbitMQ.Enums;
+﻿using Stack.RabbitMQ.Consumers;
+using Stack.RabbitMQ.Enums;
 using System;
 using System.Collections.Generic;
 
-namespace Stack.RabbitMQ.Consumers
+namespace Stack.RabbitMQ.Factory
 {
     /// <summary>
     /// 消费者工厂

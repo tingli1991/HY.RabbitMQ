@@ -1,4 +1,5 @@
 ﻿using Stack.RabbitMQ.Enums;
+using System.Collections.Generic;
 
 namespace Stack.RabbitMQ.Config
 {
@@ -43,8 +44,18 @@ namespace Stack.RabbitMQ.Config
         public PatternType PatternType { get; set; }
 
         /// <summary>
+        /// 重试的时间规则（单位：秒）
+        /// </summary>
+        public List<int> RetryTimeRules { get; set; }
+
+        /// <summary>
         /// 交换机名称
         /// </summary>
-        public string ExchangeName { get; set; }
+        public string ExchangeName => $"Stack.RabbitMQ.{PatternType}.{ExchangeType}";
+
+        /// <summary>
+        /// 重试交换机
+        /// </summary>
+        public string RetryExchangeName => $"Stack.RabbitMQ.{PatternType}.{ExchangeType}.Retry";
     }
 }

@@ -11,22 +11,22 @@
     "PluginPath": "",
     "Nodes": [
       {
+        "Durable": true,
+        "PatternType": "Rpc",
         "QueueName": "Queue.Rpc.SmsConsumer",
         "AssemblyName": "Stack.RabbitMQ.ServiceTest",
         "NameSpace": "Stack.RabbitMQ.ServiceTest.Consumers",
-        "ClassName": "SmsConsumer",
-        "Durable": true,
-        "PatternType": "Rpc"
+        "ClassName": "SmsConsumer"
       },
       {
+        "Durable": true,
+        "ExchangeType": "Direct",
+        "PatternType": "Default",
+        "RetryTimeRules": [ 1, 30, 10 ],
         "QueueName": "Queue.Direct.DirectConsumer",
         "AssemblyName": "Stack.RabbitMQ.ServiceTest",
         "NameSpace": "Stack.RabbitMQ.ServiceTest.Consumers",
-        "ClassName": "DirectConsumer",
-        "Durable": true,
-        "ExchangeType": "Direct",
-        "ExchangeName": "Exchange.Direct",
-        "PatternType": "Default"
+        "ClassName": "DirectConsumer"
       }
     ]
   }
