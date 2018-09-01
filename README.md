@@ -1,9 +1,11 @@
 # Stack.RabbitMQ  
 ### 名词解释 
-* **Queue** 队列  
-* **Exchange** 交换机  
-* **Producer** 生产者  
-* **Consumer** 消费者  
+* **Queue：** 队列  
+* **Exchange：** 交换机  
+* **Producer：** 生产者  
+* **Consumer：** 消费者  
+* **Binding：**  所谓绑定就是将一个特定的 Exchange 和一个特定的 Queue 绑定起来。Exchange 和 Queue 的绑定可以是多对多的关系。 
+* **virtual host：**  在rabbitmq server上可以创建多个虚拟的message broker，又叫做virtual hosts (vhosts)。每一个vhost本质上是一个mini-rabbitmq server，分别管理各自的exchange，和bindings。vhost相当于物理的server，可以为不同app提供边界隔离，使得应用安全的运行在不同的vhost实例上，相互之间不会干扰。producer和consumer连接rabbit server需要指定一个vhost。
 
 ### 相关链接：  
 * **官网：** http://www.rabbitmq.com/  
@@ -18,18 +20,18 @@ RabbitMQ——Rabbit Message Queue的简写，但不能仅仅理解其为消息�
 RabbitMQ作为一个消息代理，主要和消息打交道，负责接收并转发消息。RabbitMQ提供了可靠的消息机制、跟踪机制和灵活的消息路由，支持消息集群和分布式部署。  
 适用于**排队算法**、**秒杀活动**、**消息分发**、**异步处理**、**数据同步**、**处理耗时任务**、**CQRS**等诸多应用场景。
 
-###3. 简单架构示意图  
+### 3. 简单架构示意图  
 RabbitMQ系统最核心的组件是Exchange和Queue，下图是系统简单的示意图。Exchange和Queue是在rabbitmq server（又叫做broker）端，producer和consumer在应用端。
 ![简单的架构示意图](https://github-1251498502.cos.ap-chongqing.myqcloud.com/RabbitMQ/2799767-82c5402158929477_2.png?radom=12122)  
 消费者(consumer)订阅某个队列，生产者(producer)创建消息并通过exchange将消息发布到队列(queue)，最后队列在将消息发送给监听的消费者consumer。   
 
-###4. 队列（Queue）  
+### 4. 队列（Queue）  
 消息队列，提供了**先进先出**（FIFO）的处理机制，具有缓存消息的能力。rabbitmq中，队列消息可以设置为持久化，临时或者自动删除。  
 * 1、设置为持久化的队列，queue中的消息会在server本地硬盘存储一份，防止系统崩溃，数据丢失  
 * 2、设置为临时队列，queue中的数据在系统重启之后就会丢失  
 * 3、设置为自动删除的队列，当不存在用户连接到server，队列中的数据会被自动删除  
 
-###5. 交换机（Exchange）  
+### 5. 交换机（Exchange）  
 RabbitMQ中，producer不是通过信道直接将消息发送给queue，而是先发送给Exchange。**一个Exchange可以和多个Queue进行绑定**，producer在传递消息的时候，会传递一个路由key(ROUTING_KEY)，Exchange会根据这个路由key(ROUTING_KEY)按照特定的路由算法，将消息路由给指定的queue。和Queue一样，Exchange也可设置为持久化，临时或者自动删除。  
 
 ##### Exchange的4种类型：    
@@ -132,12 +134,7 @@ using (var channel = RabbitMqHelper.GetConnection().CreateModel())
 这时再把生产者的headers中user也加上,现在是完全匹配的再发布一次消息,发布的消息被consumer消费掉了。  
 ![all类型的匹配](https://github-1251498502.cos.ap-chongqing.myqcloud.com/RabbitMQ/2799767-82c5402158929477_9.png)  
 
-### Binding  
-所谓绑定就是将一个特定的 Exchange 和一个特定的 Queue 绑定起来。Exchange 和 Queue 的绑定可以是多对多的关系。 
-
-### virtual host  
-在rabbitmq server上可以创建多个虚拟的message broker，又叫做virtual hosts (vhosts)。每一个vhost本质上是一个mini-rabbitmq server，分别管理各自的exchange，和bindings。vhost相当于物理的server，可以为不同app提供边界隔离，使得应用安全的运行在不同的vhost实例上，相互之间不会干扰。producer和consumer连接rabbit server需要指定一个vhost。
-
+### 6. 死信队列  
 
 
 
