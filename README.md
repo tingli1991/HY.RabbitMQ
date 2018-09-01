@@ -1,4 +1,9 @@
 # Stack.RabbitMQ  
+### 相关链接：  
+* **官网：** http://www.rabbitmq.com/  
+* **官方教程：** http://www.rabbitmq.com/getstarted.html  
+* **微信好文：** https://mp.weixin.qq.com/s/UwuKAa1zacRTbe_LR9xIvg  
+
 ### 名词解释 
 * **Queue：** 队列  
 * **Exchange：** 交换机  
@@ -6,11 +11,6 @@
 * **Consumer：** 消费者  
 * **Binding：**  所谓绑定就是将一个特定的 Exchange 和一个特定的 Queue 绑定起来。Exchange 和 Queue 的绑定可以是多对多的关系。 
 * **virtual host：**  在rabbitmq server上可以创建多个虚拟的message broker，又叫做virtual hosts (vhosts)。每一个vhost本质上是一个mini-rabbitmq server，分别管理各自的exchange，和bindings。vhost相当于物理的server，可以为不同app提供边界隔离，使得应用安全的运行在不同的vhost实例上，相互之间不会干扰。producer和consumer连接rabbit server需要指定一个vhost。
-
-### 相关链接：  
-* **官网：** http://www.rabbitmq.com/  
-* **官方教程：** http://www.rabbitmq.com/getstarted.html  
-* **微信好文：** https://mp.weixin.qq.com/s/UwuKAa1zacRTbe_LR9xIvg  
 
 ### 1. 什么是RabbitMQ？  
 RabbitMQ——Rabbit Message Queue的简写，但不能仅仅理解其为消息队列，消息代理更合适。RabbitMQ 是一个由 Erlang 语言开发的AMQP（高级消息队列协议）的开源实现，其内部结构如下：  
