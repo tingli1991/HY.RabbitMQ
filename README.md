@@ -8,6 +8,7 @@
 ### 相关链接：  
 * **官网：** http://www.rabbitmq.com/  
 * **官方教程：** http://www.rabbitmq.com/getstarted.html  
+* **微信好文：** https://mp.weixin.qq.com/s/UwuKAa1zacRTbe_LR9xIvg  
 
 ### 1. 什么是RabbitMQ？  
 RabbitMQ——Rabbit Message Queue的简写，但不能仅仅理解其为消息队列，消息代理更合适。RabbitMQ 是一个由 Erlang 语言开发的AMQP（高级消息队列协议）的开源实现，其内部结构如下：  
