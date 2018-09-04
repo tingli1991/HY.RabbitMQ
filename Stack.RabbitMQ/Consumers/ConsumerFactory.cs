@@ -1,9 +1,8 @@
-﻿using Stack.RabbitMQ.Consumers;
-using Stack.RabbitMQ.Enums;
+﻿using Stack.RabbitMQ.Enums;
 using System;
 using System.Collections.Generic;
 
-namespace Stack.RabbitMQ.Factory
+namespace Stack.RabbitMQ.Consumers
 {
     /// <summary>
     /// 消费者工厂
@@ -14,34 +13,36 @@ namespace Stack.RabbitMQ.Factory
         /// 确保线程同步的对象锁
         /// </summary>
         private static readonly object locker = new object();
-
         /// <summary>
         /// 缓存字典
         /// </summary>
-        private static Dictionary<PatternType, BaseConsumer> InstanceCacheDic = new Dictionary<PatternType, BaseConsumer>();
-
+        private static Dictionary<string, BaseConsumer> InstanceCacheDic = new Dictionary<string, BaseConsumer>();
         /// <summary>
         /// 根据点赞类型获取对象实例
         /// </summary>
+        /// <param name="queueName"></param>
         /// <param name="patternType">消费者类型</param>
         /// <param name="constructorArgs">可变的构造函数列表</param>
         /// <returns></returns>
-        public static BaseConsumer GetInstance(PatternType patternType, params object[] constructorArgs)
+        public static BaseConsumer GetInstance(string queueName, ConsumerPatternType patternType, params object[] constructorArgs)
         {
-            if (!InstanceCacheDic.ContainsKey(patternType))
+            if (string.IsNullOrEmpty(queueName))
+                throw new ArgumentException("queueName");
+
+            if (!InstanceCacheDic.ContainsKey(queueName))
             {
                 lock (locker)
                 {
-                    if (!InstanceCacheDic.ContainsKey(patternType))
+                    if (!InstanceCacheDic.ContainsKey(queueName))
                     {
                         string assemblyName = "Stack.RabbitMQ.Consumers";
                         string className = $"{assemblyName}.{patternType.ToString()}Consumer";
                         BaseConsumer instance = (BaseConsumer)Activator.CreateInstance(Type.GetType(className), constructorArgs);
-                        InstanceCacheDic.Add(patternType, instance);
+                        InstanceCacheDic.Add(queueName, instance);
                     }
                 }
             }
-            return InstanceCacheDic[patternType];
+            return InstanceCacheDic[queueName];
         }
     }
 }

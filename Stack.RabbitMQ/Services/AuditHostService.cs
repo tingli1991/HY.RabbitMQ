@@ -4,13 +4,11 @@ using Newtonsoft.Json;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using RabbitMQ.Client.Exceptions;
-using Stack.RabbitMQ.Config;
 using Stack.RabbitMQ.Context;
 using Stack.RabbitMQ.Extensions;
-using Stack.RabbitMQ.Param;
+using Stack.RabbitMQ.Options;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -19,23 +17,27 @@ namespace Stack.RabbitMQ.Services
     /// <summary>
     /// 审计主机服务
     /// </summary>
-    public class AuditHostService : IHostedService, IDisposable
+    class AuditHostService : IHostedService, IDisposable
     {
         /// <summary>
         /// 通信渠道
         /// </summary>
-        private IModel channel;
+        private IModel _channel;
+        /// <summary>
+        /// MongoDb上下文
+        /// </summary>
+        private readonly MongoContext _mongoDbContext;
         /// <summary>
         /// 日志记录器
         /// </summary>
         private static readonly ILog _log = Log4Context.GetLogger<AuditHostService>();
-
         /// <summary>
         /// 构造函数
         /// </summary>
-        public AuditHostService()
+        public AuditHostService(MongoContext mongoDbContext)
         {
-            channel = RabbitmqContext.Connection.CreateModel();
+            _mongoDbContext = mongoDbContext;
+            _channel = RabbitmqContext.Connection.CreateModel();
         }
 
         /// <summary>
@@ -51,88 +53,70 @@ namespace Stack.RabbitMQ.Services
                 throw new TypeInitializationException("RabbitmqConfig", null);
             }
 
-            channel.BasicQos(0, 1, false);
-            var auditQueueName = $"Stack.RabbitMQ.AuditQueue";//固定声明审计队列名称
-            channel.QueueDeclare(auditQueueName, true, false, false, null);//声明审计队列
-            foreach (ConsumerNodeConfig node in config.Consumer.Nodes)
+            _channel.BasicQos(0, 1, false);
+            _channel.QueueDeclare(RabbitmqContext.AuditQueueName, true, false, false, null);//声明审计队列
+            foreach (RabbitmqServiceOptions service in config.Services)
             {
-                if (node.ExchangeType == 0)
+                if (!service.IsAudit)
                     continue;
 
-                channel.ExchangeDeclare(node.ExchangeName, node.ExchangeType.ToString().ToLower());//申明交换机
-                channel.QueueBind(auditQueueName, node.ExchangeName, node.QueueName);//建立队列与交换机的绑定关系
+                var exchangeType = service.PatternType.GetExchangeType();
+                var exchangeName = service.PatternType.GetExchangeName(service.ExchangeName);
+                _channel.ExchangeDeclare(exchangeName, exchangeType);//申明交换机
+                _channel.QueueBind(RabbitmqContext.AuditQueueName, exchangeName, service.QueueName);//建立队列与交换机的绑定关系
             }
 
-            var consumer = new EventingBasicConsumer(channel);
-            consumer.Received += (sender, args) =>
+            var consumer = new EventingBasicConsumer(_channel);
+            consumer.Received += (sender, eventArgs) =>
             {
-                var isOk = true;
+                var canAck = true;
                 try
                 {
-                    IBasicProperties basicProperties = args.BasicProperties;//消息属性
-                    IDictionary<string, object> headers = args.BasicProperties.Headers;//头部信息
-                    if (headers == null || !headers.ContainsKey("x-death"))
+                    IBasicProperties basicProperties = eventArgs.BasicProperties;//消息属性
+                    IDictionary<string, object> headers = eventArgs.BasicProperties.Headers;//头部信息
+                    if (!string.IsNullOrEmpty(eventArgs.Exchange) && (headers == null || !headers.ContainsKey(RabbitmqContext.RetryCountKeyName)))
                     {
-                        var context = new ConsumerContext
-                        {
-                            ExchangeName = args.Exchange,
-                            RoutingKey = args.RoutingKey,
-                            BodyBytes = args.Body,
-                            Body = args.Body.ToObject(),
-                            MessageId = args.BasicProperties.MessageId
-                        };
-
-                        if (headers != null)
-                        {
-                            context.Headers = new Dictionary<string, object>();
-                            foreach (var header in headers)
-                            {
-                                if (header.Value is byte[] bytes)
-                                {
-                                    context.Headers.Add(header.Key, Encoding.UTF8.GetString(bytes));
-                                }
-                                else
-                                {
-                                    context.Headers.Add(header.Key, header.Value);
-                                }
-                            }
-                        }
-
-                        var unixTime = basicProperties.Timestamp.UnixTime;
-                        if (unixTime > 0)
-                        {
-                            context.TimestampUnix = unixTime;
-                            context.Timestamp = DateTimeOffset.FromUnixTimeMilliseconds(unixTime).UtcDateTime;
-                        }
-
-                        //添加审计记录
-                        _log.Info($"【审计日志】交换器：{args.Exchange}，Context：{JsonConvert.SerializeObject(context)}");
+                        ConsumerContext context = eventArgs.GetConsumerContext();//获取消费者消息处理上下文
+                        _mongoDbContext.Collection<ConsumerContext>().InsertOneAsync(context, cancellationToken: cancellationToken);//添加审计记录
                     }
                 }
                 catch (Exception ex)
                 {
-                    isOk = false;
-                    _log.Error($"【审计异常】事件参数：{JsonConvert.SerializeObject(args)}", ex);
+                    canAck = false;
+                    _log.Error($"【审计日志】事件参数：{JsonConvert.SerializeObject(eventArgs)}", ex);
                 }
-
-                try
-                {
-                    if (isOk)
-                    {
-                        channel.BasicAck(args.DeliveryTag, false);
-                    }
-                    else
-                    {
-                        channel.BasicNack(args.DeliveryTag, false, true);
-                    }
-                }
-                catch (AlreadyClosedException ex)
-                {
-                    _log.Error("RabbitMQ is closed!!!", ex);
-                }
+                //处理应答结果
+                AnswerHandler(canAck, eventArgs);
             };
-            channel.BasicConsume(auditQueueName, false, consumer);
+            _channel.BasicConsume(RabbitmqContext.AuditQueueName, false, consumer);
             return Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// 应答处理
+        /// </summary>
+        /// <param name="canAck"></param>
+        /// <param name="eventArgs"></param>
+        /// <returns>应答处理结果，true：表示成功，false：表示失败</returns>
+        protected virtual void AnswerHandler(bool canAck, BasicDeliverEventArgs eventArgs)
+        {
+            try
+            {
+                ulong deliveryTag = eventArgs.DeliveryTag;
+                if (canAck)
+                {
+                    _channel.BasicAck(deliveryTag, false);
+                }
+                else
+                {
+                    _channel.BasicNack(deliveryTag, false, false);
+                }
+            }
+            catch (AlreadyClosedException ex)
+            {
+                string messageId = eventArgs.BasicProperties.MessageId;
+                _log.Error($"MessageId：{messageId}，重试发生异常(RabbitMQ is Closed)：", ex);
+            }
         }
 
         /// <summary>
@@ -152,8 +136,8 @@ namespace Stack.RabbitMQ.Services
         /// </summary>
         public void Dispose()
         {
-            channel?.Close();
-            channel?.Dispose();
+            _channel?.Close();
+            _channel?.Dispose();
         }
     }
 }

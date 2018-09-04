@@ -1,26 +1,22 @@
 ﻿using RabbitMQ.Client;
-using RabbitMQ.Client.Events;
 using Stack.RabbitMQ.Enums;
 using Stack.RabbitMQ.Extensions;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 
 namespace Stack.RabbitMQ.Producers
 {
     /// <summary>
-    /// 
+    /// 发布订阅模式
     /// </summary>
-    class RPCProducer : BaseProducer
+    class PublishProducer : BaseProducer
     {
         /// <summary>
         /// 构造函数
         /// </summary>
         /// <param name="patternType"></param>
-        public RPCProducer(PublishPatternType patternType)
-            : base(patternType)
+        public PublishProducer(PublishPatternType patternType) : base(patternType)
         {
-
         }
 
         /// <summary>
@@ -28,10 +24,10 @@ namespace Stack.RabbitMQ.Producers
         /// </summary>
         /// <param name="exchangeName">交换机名称</param>
         /// <param name="routingKey"></param>
-        /// <param name="messageBody"></param>
+        /// <param name="messageBody">消息内容</param>
         /// <param name="publishTime">发布时间</param>
-        /// <param name="durable"></param>
-        /// <param name="headers"></param>
+        /// <param name="durable">是否持久化</param>
+        /// <param name="headers">头部信息</param>
         /// <returns></returns>
         public override ResponseResult Publish(string exchangeName, string routingKey, object messageBody, DateTime? publishTime, bool durable, Dictionary<string, object> headers = null)
         {
@@ -50,40 +46,35 @@ namespace Stack.RabbitMQ.Producers
                 return result;
             }
 
-            if (publishTime.HasValue)
-            {
-                result.ErrorCode = "500";
-                result.ErrorMsg = "Rpc模式下不支持,也不建议定时发送";
-                return result;
-            }
-
             exchangeName = PatternType.GetExchangeName(exchangeName);//解析交换机名称
             using (var channel = RabbitmqContext.Connection.CreateModel())
             {
-                var consumer = new EventingBasicConsumer(channel);//消息接受事件
-                var replyQueueName = channel.QueueDeclare().QueueName;//回复的队列名称
+                channel.ExchangeDeclare(exchangeName, "fanout");//声明交换机
+                channel.QueueDeclare(routingKey, durable, false, false, arguments: null);//声明队列
+                channel.QueueBind(routingKey, exchangeName, routingKey);//建立队列与交换机的绑定关系
 
                 var basicProperties = channel.CreateBasicProperties();
-                basicProperties.ReplyTo = replyQueueName;//指定回复的队列名称
                 basicProperties.MessageId = Guid.NewGuid().ToString("N");
                 basicProperties.DeliveryMode = durable ? (byte)2 : (byte)1;//持久化方式
-                basicProperties.CorrelationId = Guid.NewGuid().ToString("N");//关联Id
                 basicProperties.Headers = headers ?? new Dictionary<string, object> { };
                 basicProperties.Timestamp = new AmqpTimestamp(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
-                BlockingCollection<ResponseResult> resposeQueue = new BlockingCollection<ResponseResult>();
-                consumer.Received += (sender, eventArgs) =>
-                            {
-                                if (eventArgs.BasicProperties.CorrelationId == basicProperties.CorrelationId)
-                                {
-                                    var bodyBytes = eventArgs.Body;
-                                    var response = bodyBytes.ToObject<ResponseResult>();
-                                    resposeQueue.Add(response);
-                                }
-                            };
-                channel.BasicConsume(replyQueueName, true, consumer);
-                channel.BasicPublish(exchangeName, routingKey ?? "", basicProperties, messageBody.ToBytes());
-                return resposeQueue.Take();
+                if (publishTime.HasValue)
+                {
+                    DateTime ctime = DateTime.Now;
+                    if (publishTime.Value < ctime)
+                    {
+                        result.ErrorCode = "500";
+                        result.ErrorMsg = "发布时间必须要大于系统当前时间";
+                        return result;
+                    }
+                    routingKey = routingKey.GetTaskRoutingKey();
+                    exchangeName = RabbitmqContext.TaskExchangeName;
+                    basicProperties.Expiration = ((int)publishTime.Value.Subtract(ctime).TotalMilliseconds).ToString();
+                }
+                channel.BasicPublish(exchangeName, routingKey, basicProperties, messageBody.ToBytes());
+                result.Success = true;
             }
+            return result;
         }
     }
 }

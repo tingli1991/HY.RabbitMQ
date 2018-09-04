@@ -23,7 +23,6 @@ namespace Stack.RabbitMQ.Utils
             Type type = assembly.GetType(fullName);
             return Activator.CreateInstance(type);
         }
-
         /// <summary>
         /// 创建对象实例
         /// </summary>
@@ -37,7 +36,6 @@ namespace Stack.RabbitMQ.Utils
             Type o = Type.GetType(path);//加载类型
             return (T)Activator.CreateInstance(o, true);//根据类型创建实例
         }
-
         /// <summary>
         /// 创建对象实例
         /// </summary>
@@ -51,7 +49,6 @@ namespace Stack.RabbitMQ.Utils
             string fullName = GetFullName(nameSpace, className);//命名空间.类型名
             return CreateInstance<T>(fullName, assemblyName);
         }
-
         /// <summary>
         /// 获取文件全称（命名空间.类型名）
         /// </summary>

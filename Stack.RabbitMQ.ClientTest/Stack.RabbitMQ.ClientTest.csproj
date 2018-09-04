@@ -14,6 +14,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="Config\log4net.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Config\rabbitmq.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

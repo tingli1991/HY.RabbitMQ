@@ -1,9 +1,9 @@
 ﻿using log4net;
 using Microsoft.Extensions.Hosting;
 using RabbitMQ.Client;
-using Stack.RabbitMQ.Config;
 using Stack.RabbitMQ.Context;
-using Stack.RabbitMQ.Factory;
+using Stack.RabbitMQ.Consumers;
+using Stack.RabbitMQ.Options;
 using System;
 using System.Collections.Concurrent;
 using System.Linq;
@@ -15,7 +15,7 @@ namespace Stack.RabbitMQ.Services
     /// <summary>
     /// 业务主机服务
     /// </summary>
-    public class BusinessHostService : IHostedService, IDisposable
+    class BusinessHostService : IHostedService, IDisposable
     {
         /// <summary>
         /// 日志记录器
@@ -32,16 +32,15 @@ namespace Stack.RabbitMQ.Services
         {
             var config = RabbitmqContext.Config;
             if (config == null)
-            {
                 throw new TypeInitializationException("RabbitmqConfig", null);
-            }
 
-            foreach (ConsumerNodeConfig node in config.Consumer.Nodes)
+            foreach (RabbitmqServiceOptions service in config.Services)
             {
-                var channel = ChannelDic.GetOrAdd(node.QueueName, RabbitmqContext.Connection.CreateModel());
-                var constructorArgs = new object[] { config.Consumer.PluginConfigPath, channel, node };
-                ConsumerFactory.GetInstance(node.PatternType, constructorArgs).Start();
-                _log.Info($"【业务主机】队列：{node.QueueName}启动成功！！！");
+                service.QueueName = service.QueueName.ToLower();
+                var channel = ChannelDic.GetOrAdd(service.QueueName, RabbitmqContext.Connection.CreateModel());
+                var constructorArgs = new object[] { channel, service };
+                ConsumerFactory.GetInstance(service.QueueName, service.PatternType, constructorArgs).Start();
+                _log.Info($"【业务主机】队列：{service.QueueName}启动成功！！！");
             }
             return Task.CompletedTask;
         }

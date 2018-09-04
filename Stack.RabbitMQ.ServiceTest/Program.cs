@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Hosting;
 using Stack.RabbitMQ.Extensions;
-using System;
 using System.IO;
 
 namespace Stack.RabbitMQ.ServiceTest
@@ -19,7 +18,6 @@ namespace Stack.RabbitMQ.ServiceTest
             string baseDir = Directory.GetCurrentDirectory();
             string configDir = Path.Combine(baseDir, "Config");
             IHost host = CreateDefaultHost(configDir);//创建主机
-            Console.WriteLine("启动完成！！！");
             host.Run();
         }
 
@@ -30,7 +28,9 @@ namespace Stack.RabbitMQ.ServiceTest
         /// <returns></returns>
         static IHost CreateDefaultHost(string configDir) => new HostBuilder()
             .UseLog4net(Path.Combine(configDir, "log4net.config"))
-            .UseRabbitMQ(configDir, "rabbitmq.json")
+            .Configure(configDir, "rabbitmq.json")
+            .StartBusinessHost()//启用业务主机
+            .StartAuditHost()//启用审计队列
             .Build();
     }
 }

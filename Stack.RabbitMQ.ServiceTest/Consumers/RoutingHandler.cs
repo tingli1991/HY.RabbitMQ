@@ -1,12 +1,9 @@
-﻿using Stack.RabbitMQ.Param;
-using Stack.RabbitMQ.Result;
-
-namespace Stack.RabbitMQ.ServiceTest.Consumers
+﻿namespace Stack.RabbitMQ.ServiceTest.Consumers
 {
     /// <summary>
-    /// 短信消费者
+    /// Direct消费者测试类
     /// </summary>
-    public class SmsConsumer : IConsumer
+    public class RoutingHandler : IConsumer
     {
         /// <summary>
         /// 处理方法
@@ -15,10 +12,12 @@ namespace Stack.RabbitMQ.ServiceTest.Consumers
         /// <returns></returns>
         public ResponseResult Handler(ConsumerContext context)
         {
+            var number = 0;
+            var number1 = 1 / number;
             return new ResponseResult()
             {
                 Success = true,
-                Data = "测试访问成功的结果数据"
+                Data = "Direct测试数据返回结果！！！"
             };
         }
     }

@@ -1,8 +1,7 @@
 ﻿using RabbitMQ.Client;
-using Stack.RabbitMQ.Config;
+using Stack.RabbitMQ.Options;
 using Stack.RabbitMQ.Utils;
 using System;
-using System.Collections.Concurrent;
 using System.IO;
 
 namespace Stack.RabbitMQ
@@ -17,18 +16,30 @@ namespace Stack.RabbitMQ
         /// </summary>
         private RabbitmqContext() { }
         /// <summary>
+        /// 配置文件
+        /// </summary>
+        public static RabbitmqOptions Config;
+        /// <summary>
         /// Socket链接
         /// </summary>
         public static IConnection Connection;
         /// <summary>
-        /// 配置文件
-        /// </summary>
-        public static RabbitmqConfig Config;
-        /// <summary>
         /// 链接工厂
         /// </summary>
         public static ConnectionFactory ConnectionFactory;
-      
+        /// <summary>
+        /// 第几次重试变量名称
+        /// </summary>
+        public const string RetryCountKeyName = "RetryCount";
+        /// <summary>
+        /// 审计队列名称
+        /// </summary>
+        public const string AuditQueueName = "stack.rabbitmq.auditqueue";
+        /// <summary>
+        /// 任务交换机
+        /// 备注：任务交换机用来做，消息定时发送、消息重试
+        /// </summary>
+        public const string TaskExchangeName = "stack.rabbitmq.direct.task";
         /// <summary>
         /// 配置文件初始化
         /// </summary>
@@ -44,7 +55,7 @@ namespace Stack.RabbitMQ
             }
 
             //加载配置文件
-            Config = AppSettingsUtil.GetValue<RabbitmqConfig>(fileDir, fileName);
+            Config = AppSettingsUtil.GetValue<RabbitmqOptions>(fileDir, fileName);
             if (Config == null)
             {
                 string errMsg = $"配置文件：{configPath}初始化异常！！！";
@@ -52,7 +63,7 @@ namespace Stack.RabbitMQ
             }
 
             //创建链接工厂
-            var connectionStrings = Config.ConnectionStrings;
+            var connectionStrings = Config.ConnectionString;
             ConnectionFactory = new ConnectionFactory()
             {
                 Port = connectionStrings.Port,
@@ -62,9 +73,21 @@ namespace Stack.RabbitMQ
                 UserName = connectionStrings.UserName,
                 RequestedHeartbeat = connectionStrings.TimeOut
             };
-
             //创建链接
             Connection = ConnectionFactory.CreateConnection();
+        }
+
+        /// <summary>
+        /// 创建链接
+        /// </summary>
+        public static IModel GetModel()
+        {
+            if (!Connection.IsOpen)
+            {
+                //创建链接
+                Connection = ConnectionFactory.CreateConnection();
+            }
+            return Connection.CreateModel();
         }
     }
 }

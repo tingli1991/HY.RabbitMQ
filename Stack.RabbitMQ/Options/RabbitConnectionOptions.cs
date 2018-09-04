@@ -1,9 +1,9 @@
-﻿namespace Stack.RabbitMQ.Config
+﻿namespace Stack.RabbitMQ.Options
 {
     /// <summary>
-    /// 连接字符串
+    /// 连接字符串选项
     /// </summary>
-    class ConnectionStringsConfig
+    class RabbitConnectionOptions
     {
         /// <summary>
         /// 主机地址

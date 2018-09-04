@@ -1,7 +1,4 @@
-﻿using Stack.RabbitMQ.Param;
-using Stack.RabbitMQ.Result;
-
-namespace Stack.RabbitMQ
+﻿namespace Stack.RabbitMQ
 {
     /// <summary>
     /// 消费者接口

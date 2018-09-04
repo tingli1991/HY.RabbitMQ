@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Stack.RabbitMQ.Options;
+using System.Collections.Generic;
 
 namespace Stack.RabbitMQ.Utils
 {
@@ -9,7 +10,16 @@ namespace Stack.RabbitMQ.Utils
     {
         private static readonly object _lock = new object();
         private static Dictionary<string, object> instanceDic = new Dictionary<string, object>();
-
+        /// <summary>
+        /// 创建对象实例
+        /// </summary>
+        /// <param name="pluginPath"></param>
+        /// <param name="config"></param>
+        /// <returns></returns>
+        public static T GetInstance<T>(string pluginPath, RabbitmqServiceOptions config) where T : class
+        {
+            return GetInstance<T>(pluginPath, config.AssemblyName, config.NameSpace, config.ClassName);
+        }
         /// <summary>
         /// 创建对象实例
         /// </summary>
@@ -17,9 +27,8 @@ namespace Stack.RabbitMQ.Utils
         /// <param name="nameSpace">类型所在命名空间</param>
         /// <param name="className">类型名</param>
         /// <returns></returns>
-        public static object GetInstance(string filePath, string assemblyName, string nameSpace, string className)
+        public static T GetInstance<T>(string filePath, string assemblyName, string nameSpace, string className) where T : class
         {
-            object instance = null;
             var fullName = ReflectionUtil.GetFullName(nameSpace, className);
             if (!instanceDic.ContainsKey(fullName))
             {
@@ -27,16 +36,12 @@ namespace Stack.RabbitMQ.Utils
                 {
                     if (!instanceDic.ContainsKey(fullName))
                     {
-                        instance = ReflectionUtil.CreateInstance(filePath, assemblyName, nameSpace, className);
+                        var instance = ReflectionUtil.CreateInstance(filePath, assemblyName, nameSpace, className);
                         instanceDic.Add(fullName, instance);
                     }
                 }
             }
-            else
-            {
-                instance = instanceDic[fullName];
-            }
-            return instance;
+            return (T)instanceDic[fullName];
         }
     }
 }

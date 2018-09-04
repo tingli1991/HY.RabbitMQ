@@ -12,13 +12,11 @@ namespace Stack.RabbitMQ.Utils
         /// <summary>
         /// 线程对象锁
         /// </summary>
-        private static readonly object lock_Obj = new object();
-
+        private static readonly object locker = new object();
         /// <summary>
         /// 配置文件信息
         /// </summary>
         private static readonly Dictionary<string, IConfiguration> ConfigDic = new Dictionary<string, IConfiguration>();
-
         /// <summary>
         /// 获取Json配置
         /// </summary>
@@ -31,7 +29,6 @@ namespace Stack.RabbitMQ.Utils
             IConfiguration configuration = GetJsonConfiguration(fileName);
             return ConfigurationBinder.GetValue<T>(configuration, key);
         }
-
         /// <summary>
         /// 获取Json配置
         /// </summary>
@@ -44,7 +41,6 @@ namespace Stack.RabbitMQ.Utils
             IConfiguration configuration = GetJsonConfiguration(fileDir, fileName);
             return ConfigurationBinder.Get<T>(configuration);
         }
-
         /// <summary>
         /// 获取Json配置
         /// </summary>
@@ -58,7 +54,6 @@ namespace Stack.RabbitMQ.Utils
             IConfiguration configuration = GetJsonConfiguration(fileDir, fileName);
             return ConfigurationBinder.GetValue<T>(configuration, key);
         }
-
         /// <summary>
         /// 根据文件完整的路径获取Json配置
         /// </summary>
@@ -69,7 +64,6 @@ namespace Stack.RabbitMQ.Utils
             var fileDir = Directory.GetCurrentDirectory();
             return GetJsonConfiguration(fileDir, fileName);
         }
-
         /// <summary>
         /// 根据文件目录+文件名称获取Json配置
         /// </summary>
@@ -81,7 +75,7 @@ namespace Stack.RabbitMQ.Utils
             string fullFileName = Path.Combine(fileDir, fileName);
             if (!ConfigDic.ContainsKey(fullFileName))
             {
-                lock (lock_Obj)
+                lock (locker)
                 {
                     if (!ConfigDic.ContainsKey(fullFileName))
                     {

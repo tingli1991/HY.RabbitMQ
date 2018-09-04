@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Stack.RabbitMQ.Result
+namespace Stack.RabbitMQ
 {
     /// <summary>
     /// 输出结果
