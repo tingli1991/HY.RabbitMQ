@@ -434,10 +434,11 @@ namespace Stack.RabbitMQ.ClientTest
             };
             var publishTime = DateTime.Now.AddHours(1);
 
-            //RPC模式测试示例(由于RPC是实施等待实施消费，所以对于RPC的模式来说就没有定时发送的功能)
-            string routingKey4 = "queue.rpc.rpchandler";//路由key
-            var response10 = RabbitMQClient.Publish(PublishPatternType.RPC, routingKey4, messageBody);//实时发送，服务端实施进行消费
-            var response11 = RabbitMQClient.Publish(PublishPatternType.RPC, routingKey4, messageBody, headers: headers);//实时发送，服务端实施进行消费,带自定义头部信息，服务端handler的context.Headers会接收到headers参数
+            //订阅模式测试示例(publish发布订阅消息)
+                string exchangeName1 = "stack.rabbitmq.subscribehandler";//路由key
+                var response7 = RabbitMQClient.Publish(PublishPatternType.Publish, messageBody: messageBody, exchangeName: exchangeName1);//实时发送，服务端实施进行消费
+                var response8 = RabbitMQClient.Publish(PublishPatternType.Publish, messageBody: messageBody, exchangeName: exchangeName1, publishTime: publishTime);//按指定时间发送，服务端会在指定的时间进行消费
+                var response9 = RabbitMQClient.Publish(PublishPatternType.Publish, messageBody: messageBody, exchangeName: exchangeName1, headers: headers);//实时发送，服务端实施进行消费,带自定义头部信息，服务端handler的context.Headers会接收到headers参数
             return Task.CompletedTask;
         }
 
