@@ -93,4 +93,54 @@ Stack.RabbitMQ 是一个对Rabbitmq进行二次封装的组件，目的在于提
   ]
 }
 ```  
+#### 使用步骤  
+在使用之前我们应为我们的项目需要一台宿主机，如果是控制台的话我们需要安装nuget工具包**Microsoft.Extensions.Hosting**，安装完成之后就可以安装如下的步骤执行即可（由于需求的不同，建议大家按需选择即可）
+* **环境初始化：**  该步骤主要就是我们在程序启动的时候要制定rabbitmq所使用的配置和功能，具体见下面表格及示例代码：  
+
+|          方法名称         |是否必填|                            方法说明                                                                                          |
+|---------------------------|--------|------------------------------------------------------------------------------------------------------------------------------|
+| Configure                 | 是     | 加载rabbitmq配置,这一步就是指定rabbitmq的环境配置，必不可少                                                                  |
+| UseBusinessHost           | 是     | 启用rabbitmq消费者业务主机<br/>备注：如果是消费者类型的项目才需要启用该主机（例如：客户端的生产者则无需启用就可以正常使用）  |
+| UseAuditHost              | 否     | 启用审计队列主机<br/>备注：rabbitmq审计队列主机是用来记录消费者业务主机每个消费者的请求参数,用户可以自由选择                 |
+| UseLog4net                | 否     | 使用log4net记录日志，可选配置，如果这项被起用，那么该组件就会记录一些关键的log日志，例如：重试、异常、链接关闭等             |  
+``` C#  
+using Microsoft.Extensions.Hosting;
+using Stack.RabbitMQ.Extensions;
+using System.IO;
+
+namespace Stack.RabbitMQ.ServiceTest
+{
+    /// <summary>
+    /// 
+    /// </summary>
+    class Program
+    {
+        /// <summary>
+        /// 程序主函数
+        /// </summary>
+        /// <param name="args"></param>
+        static void Main(string[] args)
+        {
+            string baseDir = Directory.GetCurrentDirectory();
+            string configDir = Path.Combine(baseDir, "Config");
+            IHost host = CreateDefaultHost(configDir);//创建主机
+            host.Run();
+        }
+
+        /// <summary>
+        /// 创建编译
+        /// </summary>
+        /// <param name="configDir"></param>
+        /// <returns></returns>
+        static IHost CreateDefaultHost(string configDir) => new HostBuilder()
+            .UseLog4net(Path.Combine(configDir, "log4net.config"))
+            .Configure(configDir, "rabbitmq.json")//加载配置文件
+            .UseBusinessHost()//启用业务主机
+            .UseAuditHost()//启用审计队列
+            .Build();
+    }
+}
+```
+
+
 ## Stack.RabbitMQ 生产者者（客户端）    
