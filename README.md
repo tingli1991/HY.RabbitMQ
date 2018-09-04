@@ -15,5 +15,66 @@ Stack.RabbitMQ 是一个对Rabbitmq进行二次封装的组件，目的在于提
 
 
 ## Stack.RabbitMQ 消费者（服务端）    
+#### 消费者（服务端）配置介绍  
+``` javascript
+{
+  "PluginDir": "",
+  "AbsolutePath": false,
+  "ConnectionString": {
+    "Port": 5672,
+    "TimeOut": 60,
+    "UserName": "admin",
+    "Host": "192.168.3.10",
+    "Password": "ChinaNet910111"
+  },
+  "MongoConnectionString": {
+    "DatabaseName": "RabbitmqAudit",
+    "ConnectionString": "mongodb://192.168.3.10:27017"
+  },
+  "Services": [
+    {
+      "Durable": true,
+      "IsAudit": true,
+      "PatternType": "Routing",
+      "RetryTimeRules": [ 1, 30, 10 ],
+      "QueueName": "queue.direct.routinghandler",
+      "AssemblyName": "Stack.RabbitMQ.ServiceTest",
+      "NameSpace": "Stack.RabbitMQ.ServiceTest.Consumers",
+      "ClassName": "DirecttHandler"
+    },
+    {
+      "Durable": true,
+      "IsAudit": true,
+      "PatternType": "RPC",
+      "RetryTimeRules": [ 1, 30, 10 ],
+      "QueueName": "queue.rpc.rpcHandler",
+      "AssemblyName": "Stack.RabbitMQ.ServiceTest",
+      "NameSpace": "Stack.RabbitMQ.ServiceTest.Consumers",
+      "ClassName": "RpcHandler"
+    },
+    {
+      "Durable": true,
+      "IsAudit": true,
+      "PatternType": "Subscribe",
+      "RetryTimeRules": [ 1, 30, 10 ],
+      "QueueName": "stack.rabbitmq.subscribehandler",
+      "ExchangeName": "stack.rabbitmq.subscribehandler",
+      "AssemblyName": "Stack.RabbitMQ.ServiceTest",
+      "NameSpace": "Stack.RabbitMQ.ServiceTest.Consumers",
+      "ClassName": "SubscribeHandler"
+    },
+    {
+      "Durable": true,
+      "IsAudit": true,
+      "PatternType": "Topic",
+      "RetryTimeRules": [ 1, 30, 10 ],
+      "QueueName": "queue.topic.topicHandler",
+      "AssemblyName": "Stack.RabbitMQ.ServiceTest",
+      "NameSpace": "Stack.RabbitMQ.ServiceTest.Consumers",
+      "ClassName": "TopicHandler"
+    }
+  ]
+}
+```
 
 ## Stack.RabbitMQ 生产者者（客户端）    
