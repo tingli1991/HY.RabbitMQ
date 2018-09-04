@@ -3,6 +3,7 @@ using Stack.RabbitMQ.Options;
 using Stack.RabbitMQ.Utils;
 using System;
 using System.IO;
+using System.Net.Sockets;
 
 namespace Stack.RabbitMQ
 {
@@ -82,7 +83,15 @@ namespace Stack.RabbitMQ
         /// </summary>
         public static IModel GetModel()
         {
-            if (!Connection.IsOpen)
+            try
+            {
+                if (!Connection.IsOpen)
+                {
+                    //创建链接
+                    Connection = ConnectionFactory.CreateConnection();
+                }
+            }
+            catch (Exception)
             {
                 //创建链接
                 Connection = ConnectionFactory.CreateConnection();

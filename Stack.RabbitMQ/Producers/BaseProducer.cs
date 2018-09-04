@@ -47,7 +47,7 @@ namespace Stack.RabbitMQ.Producers
             }
 
             exchangeName = PatternType.GetExchangeName(exchangeName);//解析交换机名称
-            using (var channel = RabbitmqContext.Connection.CreateModel())
+            using (var channel = RabbitmqContext.GetModel())
             {
                 var basicProperties = channel.CreateBasicProperties();
                 basicProperties.MessageId = Guid.NewGuid().ToString("N");

@@ -21,7 +21,7 @@
       "QueueName": "queue.direct.routinghandler",
       "AssemblyName": "Stack.RabbitMQ.ServiceTest",
       "NameSpace": "Stack.RabbitMQ.ServiceTest.Consumers",
-      "ClassName": "DirecttHandler"
+      "ClassName": "RoutingHandler"
     },
     {
       "Durable": true,
@@ -39,7 +39,7 @@
       "PatternType": "Subscribe",
       "RetryTimeRules": [ 1, 30, 10 ],
       "QueueName": "stack.rabbitmq.subscribehandler",
-      "ExchangeName": "stack.rabbitmq.subscribehandler",
+      "ExchangeName": "stack.rabbitmq.subscriexchange",
       "AssemblyName": "Stack.RabbitMQ.ServiceTest",
       "NameSpace": "Stack.RabbitMQ.ServiceTest.Consumers",
       "ClassName": "SubscribeHandler"

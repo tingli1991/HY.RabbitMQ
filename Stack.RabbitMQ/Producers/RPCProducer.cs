@@ -58,7 +58,7 @@ namespace Stack.RabbitMQ.Producers
             }
 
             exchangeName = PatternType.GetExchangeName(exchangeName);//解析交换机名称
-            using (var channel = RabbitmqContext.Connection.CreateModel())
+            using (var channel = RabbitmqContext.GetModel())
             {
                 var consumer = new EventingBasicConsumer(channel);//消息接受事件
                 var replyQueueName = channel.QueueDeclare().QueueName;//回复的队列名称
