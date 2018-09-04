@@ -335,10 +335,10 @@ namespace Stack.RabbitMQ.ClientTest
             };
             var publishTime = DateTime.Now.AddHours(1);
             //主题模式测试示例
-            string queueName2 = "queue.direct.routinghandler";//队列名称
+            string queueName2 = "queue.topic.topichandler";//队列名称
             var response4 = RabbitMQClient.Publish(PublishPatternType.Topic, queueName2, messageBody);//实时发送，服务端实施进行消费
             var response5 = RabbitMQClient.Publish(PublishPatternType.Topic, queueName2, messageBody, publishTime: publishTime);//按指定时间发送，服务端会在指定的时间进行消费
-            var response6 = RabbitMQClient.Publish(PublishPatternType.Routing, queueName2, messageBody, headers: headers);//实时发送，服务端实施进行消费,带自定义头部信息，服务端handler的context.Headers会接收到headers参数
+            var response6 = RabbitMQClient.Publish(PublishPatternType.Topic, queueName2, messageBody, headers: headers);//实时发送，服务端实施进行消费,带自定义头部信息，服务端handler的context.Headers会接收到headers参数
             return Task.CompletedTask;
         }
 
@@ -348,4 +348,113 @@ namespace Stack.RabbitMQ.ClientTest
         }
     }
 }
+``` 
+* **订阅模式测试示例（发布订阅消息）：**  
+```C# 
+using Microsoft.Extensions.Hosting;
+using Stack.RabbitMQ.Enums;
+using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+
+namespace Stack.RabbitMQ.ClientTest
+{
+    /// <summary>
+    /// 测试主机
+    /// </summary>
+    public class TestHostService : IHostedService
+    {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public Task StartAsync(CancellationToken cancellationToken)
+        {
+            var messageBody = new
+            {
+                Id = 001,
+                Name = "张三"
+            };
+            var headers = new Dictionary<string, object>()
+            {
+                { "TestKey001","测试头部Key001"},
+                { "TestKey002","测试头部Key002"}
+            };
+            var publishTime = DateTime.Now.AddHours(1);
+
+            //订阅模式测试示例(publish发布订阅消息)
+            string queueName3 = "stack.rabbitmq.subscribehandler";//队列名称
+            var response7 = RabbitMQClient.Publish(PublishPatternType.Publish, queueName3, messageBody);//实时发送，服务端实施进行消费
+            var response8 = RabbitMQClient.Publish(PublishPatternType.Publish, queueName3, messageBody, publishTime: publishTime);//按指定时间发送，服务端会在指定的时间进行消费
+            var response9 = RabbitMQClient.Publish(PublishPatternType.Publish, queueName3, messageBody, headers: headers);//实时发送，服务端实施进行消费,带自定义头部信息，服务端handler的context.Headers会接收到headers参数
+            return Task.CompletedTask;
+        }
+
+        public Task StopAsync(CancellationToken cancellationToken)
+        {
+            return Task.CompletedTask;
+        }
+    }
+}
+```  
+* **RPC模式示例（由于RPC是实施等待实施消费，所以对于RPC的模式来说就没有定时发送的功能）：**  
+```C#
+using Microsoft.Extensions.Hosting;
+using Stack.RabbitMQ.Enums;
+using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+
+namespace Stack.RabbitMQ.ClientTest
+{
+    /// <summary>
+    /// 测试主机
+    /// </summary>
+    public class TestHostService : IHostedService
+    {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public Task StartAsync(CancellationToken cancellationToken)
+        {
+            var messageBody = new
+            {
+                Id = 001,
+                Name = "张三"
+            };
+            var headers = new Dictionary<string, object>()
+            {
+                { "TestKey001","测试头部Key001"},
+                { "TestKey002","测试头部Key002"}
+            };
+            var publishTime = DateTime.Now.AddHours(1);
+
+            //RPC模式测试示例(由于RPC是实施等待实施消费，所以对于RPC的模式来说就没有定时发送的功能)
+            string queueName4 = "queue.rpc.rpchandler";//队列名称
+            var response10 = RabbitMQClient.Publish(PublishPatternType.RPC, queueName4, messageBody);//实时发送，服务端实施进行消费
+            var response11 = RabbitMQClient.Publish(PublishPatternType.RPC, queueName4, messageBody, headers: headers);//实时发送，服务端实施进行消费,带自定义头部信息，服务端handler的context.Headers会接收到headers参数
+            return Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// 停止服务主机
+        /// </summary>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public Task StopAsync(CancellationToken cancellationToken)
+        {
+            return Task.CompletedTask;
+        }
+    }
+}
 ```
+
+
+
+
+
