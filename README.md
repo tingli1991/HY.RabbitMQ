@@ -17,22 +17,22 @@ Stack.RabbitMQ 是一个对Rabbitmq进行二次封装的组件，目的在于提
 ## Stack.RabbitMQ 消费者（服务端）    
 #### 消费者（服务端）配置介绍  
 
-|          配置名称         |                            配置说明                                                                              |
-|---------------------------|------------------------------------------------------------------------------------------------------------------|
-| PluginDir                 | 消费者插件存放目录（默认：不指定则标识程序的当前执行目录）                                                       |
-| AbsolutePath              | 插件路径是否需要使用绝对路径(默认：相对路径，如果为true则标识绝对路口经)                                         |
-| Services                  | 消费者队列列表                                                                                                   |
-| Services.QueueName        | 消费者队列名称                                                                                                   |
-| Services.AssemblyName     | 插件的程序集（获取消费者处理类的时候会从Services.AssemblyName.dll中获取）                                        |
-| Services.NameSpace        | 插件的命名空间                                                                                                   |
-| Services.ClassName        | 消费者业务处理类的类名                                                                                           |
-| Services.Durable          | 队列是否需要持久化（默认：true表示需要持久化）                                                                   |
-| Services.IsAudit          | 是否需要就有审计队列记录请求参数（该字段为true并且需要启动审计队列才有效）                                       |
-| Services.ExchangeName     | 交换机名称（该字段配置只有在消费者为订阅模式的时候才生效），其他模式已经更具类型固定好交换机，无需使用者过多考虑 |
-| Services.RetryTimeRules   | 重试时间间隔以及次数配置（条数表示重试次数、每项值表示间隔时间）                                                 |
-| Services.PatternType      | 模式类型：现目前支持4中（分别是：路由模式、rpc模式、订阅模式以及主题模式）                                       |
-| ConnectionString          | rabbitmq的链接字符串                                                                                             |
-| MongoConnectionString     | Mongo的链接字符串（注意：该配置只有在启用审计队列主机的情况下才生效，目前只用于记录审计日志）                    |  
+|          配置名称         |是否必填|                            配置说明                                                                              |
+|---------------------------|--------|------------------------------------------------------------------------------------------------------------------|
+| PluginDir                 | 否     | 消费者插件存放目录（默认：不指定则标识程序的当前执行目录）                                                       |
+| AbsolutePath              | 否     | 插件路径是否需要使用绝对路径(默认：相对路径，如果为true则标识绝对路口经)                                         |
+| Services                  | 是     | 消费者队列列表                                                                                                   |
+| Services.QueueName        | 是     | 消费者队列名称                                                                                                   |
+| Services.AssemblyName     | 是     | 插件的程序集（获取消费者处理类的时候会从Services.AssemblyName.dll中获取）                                        |
+| Services.NameSpace        | 是     | 插件的命名空间                                                                                                   |
+| Services.ClassName        | 是     | 消费者业务处理类的类名                                                                                           |
+| Services.Durable          | 否     | 队列是否需要持久化（默认：true表示需要持久化）                                                                   |
+| Services.IsAudit          | 否     | 是否需要就有审计队列记录请求参数（该字段为true并且需要启动审计队列才有效）                                       |
+| Services.ExchangeName     | 否     | 交换机名称（该字段配置只有在消费者为订阅模式的时候才生效），其他模式已经更具类型固定好交换机，无需使用者过多考虑 |
+| Services.RetryTimeRules   | 否     | 重试时间间隔以及次数配置（条数表示重试次数、每项值表示间隔时间，不设置则不会启用重试机制）                       |
+| Services.PatternType      | 是     | 模式类型：现目前支持4中（分别是：路由模式、rpc模式、订阅模式以及主题模式）                                       |
+| ConnectionString          | 是     | rabbitmq的链接字符串                                                                                             |
+| MongoConnectionString     | 否     | Mongo的链接字符串（注意：该配置只有在启用审计队列主机的情况下才生效，目前只用于记录审计日志）                    |  
 ``` javascript
 {
   "PluginDir": "",
