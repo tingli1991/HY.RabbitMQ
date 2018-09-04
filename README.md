@@ -181,9 +181,72 @@ namespace Stack.RabbitMQ.ServiceTest.Consumers
       "ClassName": "DirecttHandler"
     }
 ```
-添加玩节点并重新启动一下服务，则会出现如下的队列，那么就说明消费者运行成功  
-![消费者节点](https://github-1251498502.cos.ap-chongqing.myqcloud.com/RabbitMQ/20180904202328.png)  
-
+添加玩节点并重新启动一下服务，则会出现如下的队列，那么就说明消费者运行成功,这个时候也就说明消费者端就已经完成，下面我们就可以看看客户端怎么去调用了    ![消费者节点](https://github-1251498502.cos.ap-chongqing.myqcloud.com/RabbitMQ/20180904202328.png)  
 
 
 ## Stack.RabbitMQ 生产者者（客户端）    
+#### 生产者客户端配置介绍  
+
+|          配置名称         |是否必填|                            配置说明                                                                              |
+|---------------------------|--------|------------------------------------------------------------------------------------------------------------------|
+| ConnectionString.Host     | 是     | 业务主机地址                                                                                                     |
+| ConnectionString.Port     | 是     | 业务端口                                                                                                         |
+| ConnectionString.TimeOut  | 是     | 通道链接超时时间（单位：秒）                                                                                     |
+| ConnectionString.UserName | 是     | rabbitmq账户                                                                                                     |
+| ConnectionString.Password | 是     | rabbitmq密码                                                                                                     |  
+```javascript
+
+{
+  "ConnectionString": {
+    "Host": "192.168.3.10",
+    "Port": 5672,
+    "TimeOut": 30,
+    "UserName": "admin",
+    "Password": "ChinaNet910111"
+  }
+}
+```
+好啦，配置添加完毕，下面我们就来导入配置（该步骤与服务端类似，TestHostService标识我们的测试主机，因为是控制台所以用他来做测试）  
+``` C#
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Stack.RabbitMQ.Extensions;
+using System.IO;
+
+namespace Stack.RabbitMQ.ClientTest
+{
+    /// <summary>
+    /// 
+    /// </summary>
+    class Program
+    {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="args"></param>
+        static void Main(string[] args)
+        {
+            string baseDir = Directory.GetCurrentDirectory();
+            string configDir = Path.Combine(baseDir, "Config");
+            IHost host = CreateDefaultHost(configDir);//创建主机
+            host.Run();
+        }
+
+        /// <summary>
+        /// 创建编译
+        /// </summary>
+        /// <param name="configDir"></param>
+        /// <returns></returns>
+        static IHost CreateDefaultHost(string configDir) => new HostBuilder()
+            .UseLog4net(Path.Combine(configDir, "log4net.config"))
+            .Configure(configDir, "rabbitmq.json")
+            .ConfigureServices((hostContext, services) =>
+            {
+                services.AddHostedService<TestHostService>();
+            })
+            .Build();
+    }
+}
+```  
+
+
