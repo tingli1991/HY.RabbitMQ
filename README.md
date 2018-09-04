@@ -249,4 +249,103 @@ namespace Stack.RabbitMQ.ClientTest
 }
 ```  
 
+#### 各大场景的业务测试代码示例  
+* **路由模式使用示例：**  
+```C# 
+using Microsoft.Extensions.Hosting;
+using Stack.RabbitMQ.Enums;
+using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 
+namespace Stack.RabbitMQ.ClientTest
+{
+    /// <summary>
+    /// 测试主机
+    /// </summary>
+    public class TestHostService : IHostedService
+    {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public Task StartAsync(CancellationToken cancellationToken)
+        {
+            var messageBody = new
+            {
+                Id = 001,
+                Name = "张三"
+            };
+            var headers = new Dictionary<string, object>()
+            {
+                { "TestKey001","测试头部Key001"},
+                { "TestKey002","测试头部Key002"}
+            };
+            var publishTime = DateTime.Now.AddHours(1);
+
+            //路由模式测试示例
+            string queueName1 = "queue.direct.routinghandler";//队列名称
+            var response1 = RabbitMQClient.Publish(PublishPatternType.Routing, queueName1, messageBody);//实时发送，服务端实施进行消费
+            var response2 = RabbitMQClient.Publish(PublishPatternType.Routing, queueName1, messageBody, publishTime: publishTime);//按指定时间发送，服务端会在指定的时间进行消费
+            var response3 = RabbitMQClient.Publish(PublishPatternType.Routing, queueName1, messageBody, headers: headers);//实时发送，服务端实施进行消费,带自定义头部信息，服务端handler的context.Headers会接收到headers参数
+            return Task.CompletedTask;
+        }
+
+        public Task StopAsync(CancellationToken cancellationToken)
+        {
+            return Task.CompletedTask;
+        }
+    }
+}
+```
+* **主题模式使用示例：**  
+```C#
+using Microsoft.Extensions.Hosting;
+using Stack.RabbitMQ.Enums;
+using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+
+namespace Stack.RabbitMQ.ClientTest
+{
+    /// <summary>
+    /// 测试主机
+    /// </summary>
+    public class TestHostService : IHostedService
+    {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public Task StartAsync(CancellationToken cancellationToken)
+        {
+            var messageBody = new
+            {
+                Id = 001,
+                Name = "张三"
+            };
+            var headers = new Dictionary<string, object>()
+            {
+                { "TestKey001","测试头部Key001"},
+                { "TestKey002","测试头部Key002"}
+            };
+            var publishTime = DateTime.Now.AddHours(1);
+            //主题模式测试示例
+            string queueName2 = "queue.direct.routinghandler";//队列名称
+            var response4 = RabbitMQClient.Publish(PublishPatternType.Topic, queueName2, messageBody);//实时发送，服务端实施进行消费
+            var response5 = RabbitMQClient.Publish(PublishPatternType.Topic, queueName2, messageBody, publishTime: publishTime);//按指定时间发送，服务端会在指定的时间进行消费
+            var response6 = RabbitMQClient.Publish(PublishPatternType.Routing, queueName2, messageBody, headers: headers);//实时发送，服务端实施进行消费,带自定义头部信息，服务端handler的context.Headers会接收到headers参数
+            return Task.CompletedTask;
+        }
+
+        public Task StopAsync(CancellationToken cancellationToken)
+        {
+            return Task.CompletedTask;
+        }
+    }
+}
+```
