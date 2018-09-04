@@ -95,7 +95,7 @@ Stack.RabbitMQ 是一个对Rabbitmq进行二次封装的组件，目的在于提
 ```  
 #### 使用步骤  
 在使用之前我们应为我们的项目需要一台宿主机，如果是控制台的话我们需要安装nuget工具包**Microsoft.Extensions.Hosting**，安装完成之后就可以安装如下的步骤执行即可（由于需求的不同，建议大家按需选择即可）
-* **环境初始化：**  该步骤主要就是我们在程序启动的时候要制定rabbitmq所使用的配置和功能，具体见下面表格及示例代码：  
+* **步骤一：环境初始化**  该步骤主要就是我们在程序启动的时候要制定rabbitmq所使用的配置和功能，具体见下面表格及示例代码：  
 
 |          方法名称         |是否必填|                            方法说明                                                                                          |
 |---------------------------|--------|------------------------------------------------------------------------------------------------------------------------------|
@@ -141,6 +141,49 @@ namespace Stack.RabbitMQ.ServiceTest
     }
 }
 ```
+* **步骤二：创建消费者业务处理类(以routing模式为例)**  
+``` C#
+namespace Stack.RabbitMQ.ServiceTest.Consumers
+{
+    /// <summary>
+    /// Direct消费者测试类
+    /// </summary>
+    public class RoutingHandler : IConsumer
+    {
+        /// <summary>
+        /// 处理方法
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public ResponseResult Handler(ConsumerContext context)
+        {
+            var number = 0;
+            var number1 = 1 / number;
+            return new ResponseResult()
+            {
+                Success = true,
+                Data = "Direct测试数据返回结果！！！"
+            };
+        }
+    }
+}
+```  
+* **添加节点配置并重启消费者服务(在rabbitmq.json文件的Services节点下面添加如下配置)** 
+``` C#
+{
+      "Durable": true,
+      "IsAudit": true,
+      "PatternType": "Routing",
+      "RetryTimeRules": [ 1, 30, 10 ],
+      "QueueName": "queue.direct.routinghandler",
+      "AssemblyName": "Stack.RabbitMQ.ServiceTest",
+      "NameSpace": "Stack.RabbitMQ.ServiceTest.Consumers",
+      "ClassName": "DirecttHandler"
+    }
+```
+添加玩节点并重新启动一下服务，则会出现如下的队列，那么就说明消费者运行成功  
+![消费者节点](https://github-1251498502.cos.ap-chongqing.myqcloud.com/RabbitMQ/20180904202328.png)  
+
 
 
 ## Stack.RabbitMQ 生产者者（客户端）    
