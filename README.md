@@ -399,7 +399,7 @@ namespace Stack.RabbitMQ.ClientTest
     }
 }
 ```  
-* **RPC模式示例（由于RPC是实施等待实施消费，所以对于RPC的模式来说就没有定时发送的功能）：**  
+* **RPC模式测试示例(由于RPC模式需要时时等待消费结果，所以对于RPC的模式来说就没有定时发送的功能)：**  
 ```C#
 using Microsoft.Extensions.Hosting;
 using Stack.RabbitMQ.Enums;
@@ -453,7 +453,62 @@ namespace Stack.RabbitMQ.ClientTest
     }
 }
 ```
+* **被动从指定队列拉取消息示例：**  
+```C#
+using Microsoft.Extensions.Hosting;
+using Stack.RabbitMQ.Enums;
+using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 
+namespace Stack.RabbitMQ.ClientTest
+{
+    /// <summary>
+    /// 测试主机
+    /// </summary>
+    public class TestHostService : IHostedService
+    {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public Task StartAsync(CancellationToken cancellationToken)
+        {
+            //被动从指定队列拉取消息示例(获取到消息后会自动应答（所谓自动应答就是该消息去出来后会从队列消失）)
+            string queueName5 = "queue.direct.routinghandler";//队列名称
+            var response12 = RabbitMQClient.Pull(queueName5);//按顺序直接从队列中获取一条消息，直接返回消息
+            RabbitMQClient.Pull(queueName5, message =>//按顺序直接从队列中获取一条消息，返回消息后可以对消息进行二次加工处理
+            {
+                //加工处理的业务代码
+                var body = message.Body;
+            });
+            var response13 = RabbitMQClient.Pull(queueName5, message =>//按顺序直接从队列中获取一条消息，返回消息后可以对消息进行二次加工处理，并返回处理结果
+            {
+                //加工处理的业务代码
+                var body = message.Body;
+                return new ResponseResult()
+                {
+                    Success = true,
+                    ErrorMsg = "业务处理成功"
+                };
+            });
+            return Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// 停止服务主机
+        /// </summary>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public Task StopAsync(CancellationToken cancellationToken)
+        {
+            return Task.CompletedTask;
+        }
+    }
+}
+```
 
 
 
