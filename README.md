@@ -286,10 +286,10 @@ namespace Stack.RabbitMQ.ClientTest
             var publishTime = DateTime.Now.AddHours(1);
 
             //路由模式测试示例
-            string queueName1 = "queue.direct.routinghandler";//队列名称
-            var response1 = RabbitMQClient.Publish(PublishPatternType.Routing, queueName1, messageBody);//实时发送，服务端实施进行消费
-            var response2 = RabbitMQClient.Publish(PublishPatternType.Routing, queueName1, messageBody, publishTime: publishTime);//按指定时间发送，服务端会在指定的时间进行消费
-            var response3 = RabbitMQClient.Publish(PublishPatternType.Routing, queueName1, messageBody, headers: headers);//实时发送，服务端实施进行消费,带自定义头部信息，服务端handler的context.Headers会接收到headers参数
+            string routingKey1 = "queue.direct.routinghandler";//路由key
+            var response1 = RabbitMQClient.Publish(PublishPatternType.Routing, routingKey1, messageBody);//实时发送，服务端实施进行消费
+            var response2 = RabbitMQClient.Publish(PublishPatternType.Routing, routingKey1, messageBody, publishTime: publishTime);//按指定时间发送，服务端会在指定的时间进行消费
+            var response3 = RabbitMQClient.Publish(PublishPatternType.Routing, routingKey1, messageBody, headers: headers);//实时发送，服务端实施进行消费,带自定义头部信息，服务端handler的context.Headers会接收到headers参数
             return Task.CompletedTask;
         }
 
@@ -335,10 +335,10 @@ namespace Stack.RabbitMQ.ClientTest
             };
             var publishTime = DateTime.Now.AddHours(1);
             //主题模式测试示例
-            string queueName2 = "queue.topic.topichandler";//队列名称
-            var response4 = RabbitMQClient.Publish(PublishPatternType.Topic, queueName2, messageBody);//实时发送，服务端实施进行消费
-            var response5 = RabbitMQClient.Publish(PublishPatternType.Topic, queueName2, messageBody, publishTime: publishTime);//按指定时间发送，服务端会在指定的时间进行消费
-            var response6 = RabbitMQClient.Publish(PublishPatternType.Topic, queueName2, messageBody, headers: headers);//实时发送，服务端实施进行消费,带自定义头部信息，服务端handler的context.Headers会接收到headers参数
+            string routingKey2 = "queue.topic.topichandler";//路由key
+            var response4 = RabbitMQClient.Publish(PublishPatternType.Topic, routingKey2, messageBody);//实时发送，服务端实施进行消费
+            var response5 = RabbitMQClient.Publish(PublishPatternType.Topic, routingKey2, messageBody, publishTime: publishTime);//按指定时间发送，服务端会在指定的时间进行消费
+            var response6 = RabbitMQClient.Publish(PublishPatternType.Topic, routingKey2, messageBody, headers: headers);//实时发送，服务端实施进行消费,带自定义头部信息，服务端handler的context.Headers会接收到headers参数
             return Task.CompletedTask;
         }
 
@@ -385,10 +385,10 @@ namespace Stack.RabbitMQ.ClientTest
             var publishTime = DateTime.Now.AddHours(1);
 
             //订阅模式测试示例(publish发布订阅消息)
-            string queueName3 = "stack.rabbitmq.subscribehandler";//队列名称
-            var response7 = RabbitMQClient.Publish(PublishPatternType.Publish, queueName3, messageBody);//实时发送，服务端实施进行消费
-            var response8 = RabbitMQClient.Publish(PublishPatternType.Publish, queueName3, messageBody, publishTime: publishTime);//按指定时间发送，服务端会在指定的时间进行消费
-            var response9 = RabbitMQClient.Publish(PublishPatternType.Publish, queueName3, messageBody, headers: headers);//实时发送，服务端实施进行消费,带自定义头部信息，服务端handler的context.Headers会接收到headers参数
+            string routingKey3 = "stack.rabbitmq.subscribehandler";//路由key
+            var response7 = RabbitMQClient.Publish(PublishPatternType.Publish, routingKey3, messageBody);//实时发送，服务端实施进行消费
+            var response8 = RabbitMQClient.Publish(PublishPatternType.Publish, routingKey3, messageBody, publishTime: publishTime);//按指定时间发送，服务端会在指定的时间进行消费
+            var response9 = RabbitMQClient.Publish(PublishPatternType.Publish, routingKey3, messageBody, headers: headers);//实时发送，服务端实施进行消费,带自定义头部信息，服务端handler的context.Headers会接收到headers参数
             return Task.CompletedTask;
         }
 
@@ -435,9 +435,9 @@ namespace Stack.RabbitMQ.ClientTest
             var publishTime = DateTime.Now.AddHours(1);
 
             //RPC模式测试示例(由于RPC是实施等待实施消费，所以对于RPC的模式来说就没有定时发送的功能)
-            string queueName4 = "queue.rpc.rpchandler";//队列名称
-            var response10 = RabbitMQClient.Publish(PublishPatternType.RPC, queueName4, messageBody);//实时发送，服务端实施进行消费
-            var response11 = RabbitMQClient.Publish(PublishPatternType.RPC, queueName4, messageBody, headers: headers);//实时发送，服务端实施进行消费,带自定义头部信息，服务端handler的context.Headers会接收到headers参数
+            string routingKey4 = "queue.rpc.rpchandler";//路由key
+            var response10 = RabbitMQClient.Publish(PublishPatternType.RPC, routingKey4, messageBody);//实时发送，服务端实施进行消费
+            var response11 = RabbitMQClient.Publish(PublishPatternType.RPC, routingKey4, messageBody, headers: headers);//实时发送，服务端实施进行消费,带自定义头部信息，服务端handler的context.Headers会接收到headers参数
             return Task.CompletedTask;
         }
 
@@ -509,7 +509,47 @@ namespace Stack.RabbitMQ.ClientTest
     }
 }
 ```
+* **客户端消息订阅：** 
+```C# 
+using Microsoft.Extensions.Hosting;
+using Stack.RabbitMQ.Enums;
+using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 
+namespace Stack.RabbitMQ.ClientTest
+{
+    /// <summary>
+    /// 测试主机
+    /// </summary>
+    public class TestHostService : IHostedService
+    {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public Task StartAsync(CancellationToken cancellationToken)
+        {
+            //客户端订阅消息（由于考虑到性能问题，这中订阅模式，没有重试机制，目前也没想到那些场景会使用到重试，有想法欢迎大家积极反馈，合理的一定新增相关功能）
+            string exchangeName = "stack.rabbitmq.subscribehandler";
+            RabbitMQClient.Subscribe(exchangeName, context =>
+            {
+                //订阅成功，执行后续的业务代码
+            });
+            return Task.CompletedTask;
+        }
 
-
-
+        /// <summary>
+        /// 停止服务主机
+        /// </summary>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public Task StopAsync(CancellationToken cancellationToken)
+        {
+            return Task.CompletedTask;
+        }
+    }
+}
+```
