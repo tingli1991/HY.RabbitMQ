@@ -1,5 +1,4 @@
 ﻿using MongoDB.Bson;
-using RabbitMQ.Client;
 using Stack.RabbitMQ.Interface;
 using System;
 using System.Collections.Generic;
@@ -48,9 +47,13 @@ namespace Stack.RabbitMQ
         /// </summary>
         public DateTime ConsumerReceiveTime { get; set; }
         /// <summary>
-        /// 消息属性
+        /// 回复的队列名称
         /// </summary>
-        public IBasicProperties BasicProperties { get; set; }
+        public string ReplyTo { get; set; }
+        /// <summary>
+        /// 关联Id
+        /// </summary>
+        public string CorrelationId { get; set; }
         /// <summary>
         /// 头部信息
         /// </summary>

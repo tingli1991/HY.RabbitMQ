@@ -39,7 +39,7 @@ namespace Stack.RabbitMQ.Producers
             if (string.IsNullOrEmpty(routingKey))
             {
                 result.ErrorCode = "500";
-                result.ErrorMsg = "参数routingKey必填";
+                result.ErrorMsg = "参数queueName必填";
                 return result;
             }
 

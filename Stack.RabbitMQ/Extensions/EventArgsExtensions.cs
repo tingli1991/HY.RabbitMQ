@@ -23,8 +23,10 @@ namespace Stack.RabbitMQ.Extensions
                 Body = eventArgs.Body.ToObject(),
                 ExchangeName = eventArgs.Exchange,
                 RoutingKey = eventArgs.RoutingKey,
-                BasicProperties = eventArgs.BasicProperties,
-                MessageId = eventArgs.BasicProperties.MessageId
+                Headers = new Dictionary<string, object>(),
+                MessageId = eventArgs.BasicProperties.MessageId,
+                ReplyTo = eventArgs.BasicProperties.ReplyTo ?? "",
+                CorrelationId = eventArgs.BasicProperties.CorrelationId ?? ""
             };
             var headers = eventArgs.BasicProperties.Headers;//头部信息
             var unixTime = eventArgs.BasicProperties.Timestamp.UnixTime;
@@ -37,7 +39,6 @@ namespace Stack.RabbitMQ.Extensions
             }
             if (headers != null && headers.Any())
             {
-                context.Headers = new Dictionary<string, object>();
                 foreach (var header in headers)
                 {
                     if (header.Value is byte[] bytes)

@@ -10,7 +10,7 @@ namespace Stack.RabbitMQ.ServiceTest
     class Program
     {
         /// <summary>
-        /// 
+        /// 程序主函数
         /// </summary>
         /// <param name="args"></param>
         static void Main(string[] args)
@@ -28,9 +28,9 @@ namespace Stack.RabbitMQ.ServiceTest
         /// <returns></returns>
         static IHost CreateDefaultHost(string configDir) => new HostBuilder()
             .UseLog4net(Path.Combine(configDir, "log4net.config"))
-            .Configure(configDir, "rabbitmq.json")
-            .StartBusinessHost()//启用业务主机
-            .StartAuditHost()//启用审计队列
+            .Configure(configDir, "rabbitmq.json")//加载配置文件
+            .UseBusinessHost()//启用业务主机
+            .UseAuditHost()//启用审计队列
             .Build();
     }
 }

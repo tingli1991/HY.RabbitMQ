@@ -111,7 +111,7 @@ namespace Stack.RabbitMQ
         /// <param name="exchangeName">交换机名称</param>
         /// <param name="queueName">队列名称</param>
         /// <returns></returns>
-        public void Subscribe(string exchangeName, Action<ConsumerContext> action)
+        public static void Subscribe(string exchangeName, Action<ConsumerContext> action)
         {
             if (string.IsNullOrEmpty(exchangeName))
                 throw new ArgumentNullException("exchangeName");
@@ -135,18 +135,18 @@ namespace Stack.RabbitMQ
         /// 发布
         /// </summary>
         /// <param name="patternType">模式类型</param>
+        /// <param name="queueName">队列名称</param>
         /// <param name="messageBody">消息内容</param>
         /// <param name="publishTime">发布时间(到了发布时间队列才会执行)</param>
         /// <param name="exchangeName">交换机名称</param>
-        /// <param name="routingKey">路由Key</param>
         /// <param name="durabled">是否持久化(默认：需要持久化)</param>
         /// <param name="headers">头部信息</param>
         /// <returns></returns>
-        public static ResponseResult Publish(PublishPatternType patternType, object messageBody = null, DateTime? publishTime = null,
-            string exchangeName = "", string routingKey = "", bool durabled = true, Dictionary<string, object> headers = null)
+        public static ResponseResult Publish(PublishPatternType patternType, string queueName = "", object messageBody = null, DateTime? publishTime = null,
+            string exchangeName = "",  bool durabled = true, Dictionary<string, object> headers = null)
         {
             var instance = GetInstance(patternType, patternType);
-            return instance.Publish(exchangeName, routingKey, messageBody, publishTime, durabled, headers);
+            return instance.Publish(exchangeName, queueName, messageBody, publishTime, durabled, headers);
         }
     }
 }

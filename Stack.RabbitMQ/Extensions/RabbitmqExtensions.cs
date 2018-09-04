@@ -44,7 +44,7 @@ namespace Stack.RabbitMQ.Extensions
         }
         #endregion
 
-        #region rabbitmq 加载rabbitmq配置
+        #region 加载rabbitmq配置
         /// <summary>
         /// 加载rabbitmq配置
         /// 备注：无论是客户端还是服务端必须先加载配置
@@ -88,7 +88,7 @@ namespace Stack.RabbitMQ.Extensions
         /// <param name="fileDir">配置文件路径</param>
         /// <param name="fileName"></param>
         /// <returns></returns>
-        public static IHostBuilder StartBusinessHost(this IHostBuilder builder)
+        public static IHostBuilder UseBusinessHost(this IHostBuilder builder)
         {
             if (builder == null)
                 throw new ArgumentNullException(nameof(builder));
@@ -110,7 +110,7 @@ namespace Stack.RabbitMQ.Extensions
         /// <param name="fileDir">配置文件路径</param>
         /// <param name="fileName"></param>
         /// <returns></returns>
-        public static IWebHostBuilder StartBusinessHost(this IWebHostBuilder builder)
+        public static IWebHostBuilder UseBusinessHost(this IWebHostBuilder builder)
         {
             if (builder == null)
                 throw new ArgumentNullException(nameof(builder));
@@ -134,7 +134,7 @@ namespace Stack.RabbitMQ.Extensions
         /// </summary>
         /// <param name="builder"></param>
         /// <returns></returns>
-        public static IHostBuilder StartAuditHost(this IHostBuilder builder)
+        public static IHostBuilder UseAuditHost(this IHostBuilder builder)
         {
             if (builder == null)
                 throw new ArgumentNullException(nameof(builder));
@@ -159,7 +159,7 @@ namespace Stack.RabbitMQ.Extensions
         /// </summary>
         /// <param name="builder"></param>
         /// <returns></returns>
-        public static IWebHostBuilder StartAuditHost(this IWebHostBuilder builder)
+        public static IWebHostBuilder UseAuditHost(this IWebHostBuilder builder)
         {
             if (builder == null)
                 throw new ArgumentNullException(nameof(builder));
