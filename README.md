@@ -1,5 +1,5 @@
 # Stack.RabbitMQ  
-Stack.RabbitMQ 是一个对Rabbitmq进行二次封装的组件，目的在于提升开发效率，提高业务的高可用以及降低开发成本，本文支队本插件的使用做介绍，有对不了解rabbitmq是什么(或者不熟悉的朋友)，可以先移步[基础教程篇](https://github.com/tingli1991/Stack.RabbitMQ/blob/master/%E5%9F%BA%E7%A1%80%E6%95%99%E7%A8%8B.md)进行了解，然后再来试着使用本插件   
+Stack.RabbitMQ 是一个对Rabbitmq进行二次封装的组件，目的在于提升开发效率，提高业务的高可用以及降低开发成本，本文只对本插件的使用做介绍，有不了解rabbitmq是什么(或者不熟悉的朋友)，可以先移步[基础教程篇](https://github.com/tingli1991/Stack.RabbitMQ/blob/master/%E5%9F%BA%E7%A1%80%E6%95%99%E7%A8%8B.md)进行了解，然后再来试着使用本插件   
 
 ### 使用之前需要了解的内容 
 * **模式类型：** 所谓的模式类型就是组件Stack.RabbitMQ自身扩展的几种固定的生产和消费类型，每个模式的不同所支持的业务以及功能也有所不同，具体每种模式都具备什么功能，见下表：      
